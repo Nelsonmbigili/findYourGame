@@ -12,12 +12,24 @@ app.use(express.static(path.join(__dirname, 'documentation')));
 app.set("view engine", "hbs");
 
 app.get("/", (req,res)=>{
-	res.send("Index Page")
+	res.send(`
+  <div style="display:flex; justify-content:center; align-items:center; height:100vh;">
+    <img src="landing-page.png" alt="Website Logo">
+  </div>
+`);
+
 })
 
 app.get("/login", (req,res)=>{
-	res.send("log in page")
+	res.send(`
+  <div style="display:flex; justify-content:center; align-items:center; height:100vh;">
+    <img src="Sign-In-page.png" alt="Website Logo">
+  </div>
+`);
+
 })
+
+
 
 
 const PORT = process.env.PORT || 3000;
