@@ -67,40 +67,72 @@ An Example Sport:
 
 ## Wireframes
 
-/ – landing page for introducing the app to new users
+<details>
+<summary>/ – Landing Page for introducing the app to new users</summary>
 
 ![landing page](documentation/landing-page.png)
 
-/signup – page for creating a new user account
+</details>
+
+<details>
+<summary>/signup – Page for creating a new user account</summary>
 
 ![sign up](documentation/SignUp-page.png)
 
-/login – page for logging in existing users
+</details>
+
+<details>
+<summary>/login – Page for logging in existing users</summary>
 
 ![sign in](documentation/Sign-In-page.png)
 
-/events – page for showing all available sports events
+</details>
+
+<details>
+<summary>/events – Page for showing all available sports events</summary>
 
 ![all events](documentation/AllEvents-page.png)
 
-/events/create – page for creating a new sports event
+</details>
+
+<details>
+<summary>/events/create – Page for creating a new sports event</summary>
 
 ![create event](documentation/CreateEvent-page.png)
 
-/events/:id – page for showing a specific event’s details
+</details>
+
+<details>
+<summary>/events/:id – Page for showing a specific event’s details</summary>
 
 ![event details](documentation/EventDetails-page.png)
 
-/profile – page for showing the user’s profile and account information
+</details>
+
+<details>
+<summary>/profile – Page for showing the user’s profile and account information</summary>
 
 ![profile](documentation/Profile-page.png)
 
+</details>
+
+<details>
+<summary>/map – Page showing sports events on an interactive map</summary>
+
+![map](documentation/EventMap-page.png)
+
+</details>
+
 
 ## Site map
+Here is a simple Site Map
 
-(__TODO__: draw out a site map that shows how pages are related to each other)
+<details>
+<summary>View</summary>
 
-Here's a [complex example from wikipedia](https://upload.wikimedia.org/wikipedia/commons/2/20/Sitemap_google.jpg), but you can create one without the screenshots, drop shadows, etc. ... just names of pages and where they flow to.
+![map](documentation/SiteMap.png)
+
+</details>
 
 ## User Stories or Use Cases
 
@@ -121,10 +153,10 @@ Here's a [complex example from wikipedia](https://upload.wikimedia.org/wikipedia
   - **Local strategy**: users register/login with email/username and password.  
   - **OAuth (Open Authorization)**: users can optionally log in with Google or Facebook.  
 - Ensure secure password storage (hashed), session management, and encrypted transfers.  
-- Some reference sites:  
-   [Username & Password](https://www.passportjs.org/tutorials/password/)
-   [Sign In with Google](https://www.passportjs.org/tutorials/google/)
-   [Sign In with Facebook](https://www.passportjs.org/tutorials/facebook/)
+Some reference sites:  
+[Username & Password](https://www.passportjs.org/tutorials/password/)<br>
+[Sign In with Google](https://www.passportjs.org/tutorials/google/)<br>
+[Sign In with Facebook](https://www.passportjs.org/tutorials/facebook/)
 
 ### Client-Side Input Validation (2 points)
 - Validate registration, login, and event creation forms.  
