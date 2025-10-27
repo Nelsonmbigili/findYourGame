@@ -122,9 +122,9 @@ Here's a [complex example from wikipedia](https://upload.wikimedia.org/wikipedia
   - **OAuth (Open Authorization)**: users can optionally log in with Google or Facebook.  
 - Ensure secure password storage (hashed), session management, and encrypted transfers.  
 - Some reference sites:  
-   ![Username & Password](https://www.passportjs.org/tutorials/password/)
-   ![Sign In with Google](https://www.passportjs.org/tutorials/google/)
-   ![Sign In with Facebook](https://www.passportjs.org/tutorials/facebook/)
+   [Username & Password](https://www.passportjs.org/tutorials/password/)
+   [Sign In with Google](https://www.passportjs.org/tutorials/google/)
+   [Sign In with Facebook](https://www.passportjs.org/tutorials/facebook/)
 
 ### Client-Side Input Validation (2 points)
 - Validate registration, login, and event creation forms.  
