@@ -2,25 +2,31 @@ The content below is an example project proposal / requirements document. Replac
 
 (__TODO__: your project name)
 
-# Shoppy Shoperson 
+## FindYourGame
 
 ## Overview
 
 (__TODO__: a brief one or two paragraph, high-level description of your project)
 
-Remembering what to buy at the grocery store is waaaaay too difficult. Also, shopping for groceries when you're hungry leads to regrettable purchases. Sooo... that's where Shoppy Shoperson comes in!
+In today’s fast-paced urban life, many people are so busy with work that they often forget to stay active or find time to play. Even when they want to, they rarely know where to start or how to find others to join.
 
-Shoppy Shoperson is a web app that will allow users to keep track of multiple grocery lists. Users can register and login. Once they're logged in, they can create or view their grocery list. For every list that they have, they can add items to the list or cross off items.
+FindYourGame is a web app designed to make it easy for people to discover and join sports events happening around their city. Users can create an account, log in, and either register new games or join existing ones based on their interests and schedules. The platform provides clear information about event times, locations, and availability. Some events may include small fees to cover field reservations or facility costs.
+
+With FindYourGame, staying active and social has never been simpler—just find your game and play.
 
 
 ## Data Model
 
 (__TODO__: a description of your application's data and their relationships to each other) 
 
-The application will store Users, Lists and Items
+The application FindYourGame will store information about Users, Sports Events and Sports.
 
-* users can have multiple lists (via references)
-* each list can have multiple items (by embedding)
+  Users can create and join multiple sports events (via references).
+
+  Each event is linked to one sport, one location, and one user who created it and has ids of participating users.
+
+  Sports define the different types of games available in the app.
+
 
 (__TODO__: sample documents)
 
@@ -28,23 +34,40 @@ An Example User:
 
 ```javascript
 {
-  username: "shannonshopper",
-  hash: // a password hash,
-  lists: // an array of references to List documents
+  username: "nelsonplayer",
+  email: "nelson@example.com",
+  hash:                             // a password hash,
+  createdEvents: ["e101", "e205"],  // references to Events the user created
+  joinedEvents: ["e108", "e222"],   // references to Events the user joined
+  createdAt:                      
 }
 ```
 
-An Example List with Embedded Items:
+An Example Sports Event:
 
 ```javascript
 {
-  user: // a reference to a User object
-  name: "Breakfast foods",
-  items: [
-    { name: "pancakes", quantity: "9876", checked: false},
-    { name: "ramen", quantity: "2", checked: true},
-  ],
-  createdAt: // timestamp
+  title: "Saturday Morning Football",
+  desciption:"Please bring a pair of Shoes and two Tshirts black and red"  
+  sport: "Football",                     // reference to a Sport document
+  location: "Central Park",              // Embeded Document with more details like (Address / GPS data for Map)
+  date: "2025-10-25",
+  time: "10:00 AM",
+  fee: 5.00,
+  slots: 12,
+  owner: "u001",                          // reference to User who created the event
+  participants: ["u002", "u005", "u009"], // user IDs of participants
+  createdAt:                              // timestamp
+}
+```
+
+An Example Sport:
+
+```javascript
+{
+  name: "Football",
+  type: "Team",
+  equipment: ["ball", "Jerseys"]
 }
 ```
 
@@ -55,19 +78,36 @@ An Example List with Embedded Items:
 
 ## Wireframes
 
-(__TODO__: wireframes for all of the pages on your site; they can be as simple as photos of drawings or you can use a tool like Balsamiq, Omnigraffle, etc.)
+(__TODO__: Here are the wireframes for some my pages using Balsamiq)
 
-/list/create - page for creating a new shopping list
+/ – landing page for introducing the app to new users
 
-![list create](documentation/list-create.png)
+![landing page](documentation/landing-page.png)
 
-/list - page for showing all shopping lists
+/signup – page for creating a new user account
 
-![list](documentation/list.png)
+![sign up](documentation/SignUp-page.png)
 
-/list/slug - page for showing specific shopping list
+/login – page for logging in existing users
 
-![list](documentation/list-slug.png)
+![sign in](documentation/Sign-In-page.png)
+
+/events – page for showing all available sports events
+
+![all events](documentation/AllEvents-page.png)
+
+/events/create – page for creating a new sports event
+
+![create event](documentation/CreateEvent-page.png)
+
+/events/:id – page for showing a specific event’s details
+
+![event details](documentation/EventDetails-page.png)
+
+/profile – page for showing the user’s profile and account information
+
+![profile](documentation/Profile-page.png)
+
 
 ## Site map
 
