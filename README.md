@@ -1,12 +1,6 @@
-The content below is an example project proposal / requirements document. Replace the text below the lines marked "__TODO__" with details specific to your project. Remove the "TODO" lines.
-
-(__TODO__: your project name)
-
-## FindYourGame
+# FindYourGame
 
 ## Overview
-
-(__TODO__: a brief one or two paragraph, high-level description of your project)
 
 In today’s fast-paced urban life, many people are so busy with work that they often forget to stay active or find time to play. Even when they want to, they rarely know where to start or how to find others to join.
 
@@ -17,18 +11,14 @@ With FindYourGame, staying active and social has never been simpler—just find 
 
 ## Data Model
 
-(__TODO__: a description of your application's data and their relationships to each other) 
-
 The application FindYourGame will store information about Users, Sports Events and Sports.
 
-  Users can create and join multiple sports events (via references).
+Users can create and join multiple sports events (via references).
 
-  Each event is linked to one sport, one location, and one user who created it and has ids of participating users.
+Each event is linked to one sport, one location, and one user who created it and has ids of participating users.
 
-  Sports define the different types of games available in the app.
+Sports define the different types of games available in the app.
 
-
-(__TODO__: sample documents)
 
 An Example User:
 
@@ -74,11 +64,8 @@ An Example Sport:
 
 ## [Link to Commented First Draft Schema](db.mjs) 
 
-(__TODO__: create a first draft of your Schemas in db.mjs and link to it)
 
 ## Wireframes
-
-(__TODO__: Here are the wireframes for some my pages using Balsamiq)
 
 / – landing page for introducing the app to new users
 
