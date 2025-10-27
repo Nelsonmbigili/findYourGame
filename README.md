@@ -104,41 +104,64 @@ Here's a [complex example from wikipedia](https://upload.wikimedia.org/wikipedia
 
 ## User Stories or Use Cases
 
-(__TODO__: write out how your application will be used through [user stories](http://en.wikipedia.org/wiki/User_story#Format) and / or [use cases](https://en.wikipedia.org/wiki/Use_case))
-
-1. as non-registered user, I can register a new account with the site
-2. as a user, I can log in to the site
-3. as a user, I can create a new grocery list
-4. as a user, I can view all of the grocery lists I've created in a single list
-5. as a user, I can add items to an existing grocery list
-6. as a user, I can cross off items in an existing grocery list
+1. As a non-registered user, I can browse all available sports events so that I can see what games are happening.
+2. As a non-registered user, I can view details of any event (location, date/time, sport type, participants) so that I know more about it.
+3. As a non-registered user, I must register or log in only if I want to join or reserve a spot in an event.
+4. As a non-registered user, I can sign up for a new account so that I can participate in events.
+5. As a user, I can log in to the app so that I can access my events and profile.
+6. As a user, I can join or leave an event so that I can participate in games I’m interested in.
+7. As a user, I can create a new sports event so that I can organize games for others to join.
+8. As a user, I can view the events I have created or joined in a single place (/myevents) so that I can manage my schedule.
+9. As a user, I can edit or delete events I own so that I can manage or cancel events I organized.
+10. As a user, I can view and edit my profile so that my account information and preferences are up to date.
 
 ## Research Topics
+### User Authentication (5 points)
+- Implement dual authentication:  
+  - **Local strategy**: users register/login with email/username and password.  
+  - **OAuth (Open Authorization)**: users can optionally log in with Google or Facebook.  
+- Ensure secure password storage (hashed), session management, and encrypted transfers.  
+- Some reference sites:  
+   ![Username & Password](https://www.passportjs.org/tutorials/password/)
+   ![Sign In with Google](https://www.passportjs.org/tutorials/google/)
+   ![Sign In with Facebook](https://www.passportjs.org/tutorials/facebook/)
 
-(__TODO__: the research topics that you're planning on working on along with their point values... and the total points of research topics listed)
+### Client-Side Input Validation (2 points)
+- Validate registration, login, and event creation forms.  
+- Provide real-time feedback for invalid input (e.g., required fields, numeric limits, email format). 
 
-* (5 points) Integrate user authentication
-    * I'm going to be using passport for user authentication
-    * And account has been made for testing; I'll email you the password
-    * see <code>cs.nyu.edu/~jversoza/ait-final/register</code> for register page
-    * see <code>cs.nyu.edu/~jversoza/ait-final/login</code> for login page
-* (4 points) Perform client side form validation using a JavaScript library
-    * see <code>cs.nyu.edu/~jversoza/ait-final/my-form</code>
-    * if you put in a number that's greater than 5, an error message will appear in the dom
-* (5 points) vue.js
-    * used vue.js as the frontend framework; it's a challenging library to learn, so I've assigned it 5 points
+### Server-Side Validation (2 points)
+- Complement client-side validation to securely reject invalid or malicious data.  
+- Ensure events, dates, and fees meet business rules.  
 
-10 points total out of 8 required points (___TODO__: addtional points will __not__ count for extra credit)
+### User Preferences with Cookies / localStorage (2 points)
+- Persist preferences such as favorite sports, notifications, or UI settings.  
+- Auto-filter events based on stored preferences for a personalized experience. 
+- Require email Verification or phone number OTP verifications  
+
+### Event Payments (Stripe Integration) (1 point)
+- Integrate **Stripe** to handle payments for events that require fees.  
+- Users can pay **securely with credit/debit cards** directly on the event page.  
+- Payment status is linked to the user's account and updates the **event participant list**. 
+
+### Map Integration & Location Tracking (1 point)
+- Detect user location via IP-based geolocation (e.g., **ipapi** or **ipstack**).  
+- Display events on an interactive map using either:  
+  - **Google Maps JavaScript API** – markers, directions, info windows.  
+  - **Leaflet.js** – lightweight, open-source mapping.  
+  - **Mapbox** – custom styling and clustering.  
+- Users can see nearby events, click markers for details, and get directions.  
+
+### Analytics / Activity Tracking (1 point)
+- Track user interactions and popular events using IP-based analytics or **Google Analytics**.  
+- Report interactions to Event Creators
 
 
 ## [Link to Initial Main Project File](app.mjs) 
 
-(__TODO__: create a skeleton Express application with a package.json, app.mjs, views folder, etc. ... and link to your initial app.mjs)
 
 ## Annotations / References Used
 
-(__TODO__: list any tutorials/references/etc. that you've based your code off of)
-
-1. [passport.js authentication docs](http://passportjs.org/docs) - (add link to source code that was based on this)
-2. [tutorial on vue.js](https://vuejs.org/v2/guide/) - (add link to source code that was based on this)
-
+1. [passport.js authentication docs](http://passportjs.org/docs)
+2. [Some useful public APIs](https://github.com/public-apis/public-apis)
+3. [Stripe Payment](https://docs.stripe.com/)
