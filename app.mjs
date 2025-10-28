@@ -1,8 +1,8 @@
-import express from 'express'
-import path from 'path'
+import express from 'express';
+import path from 'path';
 import { fileURLToPath } from 'url';
 import './config.mjs';
-import "./db.mjs"
+import "./db.mjs";
 
 const app = express();
 const __filename = fileURLToPath(import.meta.url);
@@ -12,24 +12,23 @@ app.use(express.static(path.join(__dirname, 'documentation')));
 app.set("view engine", "hbs");
 
 app.get("/", (req,res)=>{
-	res.send(`
-  <div style="display:flex; justify-content:center; align-items:center; height:100vh;">
-    <img src="landing-page.png" alt="Website Logo">
-  </div>
-`);
+	res.render("index",{});
 
-})
+});
+
+app.get("/about", (req,res)=>{
+	res.render("about",{});
+
+});
+
+app.get("/events", (req,res)=>{
+  res.render("events",{});
+
+});
 
 app.get("/login", (req,res)=>{
-	res.send(`
-  <div style="display:flex; justify-content:center; align-items:center; height:100vh;">
-    <img src="Sign-In-page.png" alt="Website Logo">
-  </div>
-`);
-
-})
-
-
+  res.render("login",{});
+});
 
 
 const PORT = process.env.PORT || 3000;

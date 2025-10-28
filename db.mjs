@@ -7,13 +7,12 @@ mongoose.connect(process.env.DNS)
 
 
 // Schemas
-
 const userSchema = new mongoose.Schema({
   username: { type: String, required: true },
   email: { type: String, required: true },
   hash: { type: String, required: true },
-  createdEvents: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Event' }], 
-  joinedEvents: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Event' }],  
+  createdEvents: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Event' }],  // Arr of Reference to obj 
+  joinedEvents: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Event' }],   // Arr of Reference to obj 
   createdAt: { type: Date, default: Date.now }
 });
 
@@ -26,8 +25,8 @@ const eventSchema = new mongoose.Schema({
   time: { type: String, required: true },
   fee: { type: Number, default: 0 },
   slots: { type: Number, required: true },
-  owner: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
-  participants: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
+  owner: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true }, // Reference to obj
+  participants: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],        // Arr of Reference to obj
   createdAt: { type: Date, default: Date.now }
 });
 
