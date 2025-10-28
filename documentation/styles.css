@@ -1,0 +1,134 @@
+body {
+  font-family: Arial, sans-serif;
+  margin: 0;
+  min-height: 100vh;          
+  display: flex;
+  flex-direction: column;     
+  background-color: #f8f9fa;
+  color: #333;
+}
+
+.container {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+header {
+  background-color: green;
+}
+
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 0;
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: white;
+  font-size: 1.2rem;
+  text-decoration: none;
+  font-weight: bold;
+  height: 40px; 
+}
+
+.logo img {
+  max-width: 100%;
+  max-height: 100%;
+  width: 28px;      
+  height: 28px;      
+  display: block;   
+  object-fit: contain; 
+}
+
+.nav-links {
+  list-style: none;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 16px;
+  margin: 0;
+  padding: 0;
+}
+
+.nav-links a {
+  color: white;
+  text-decoration: none;
+  font-size: 1rem;
+}
+
+.nav-links a:hover {
+  text-decoration: none;
+}
+
+main {
+  flex: 1;                   
+  padding: 30px 0;
+}
+
+footer {
+  background: #000;
+  color: white;
+  text-align: center;
+  padding: 15px 0;
+}
+
+.account {
+  background-color: white;
+  color: black;             
+  padding: 10px 20px;        
+  border: 1px solid #ccc;    
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.account:hover {
+  background-color: black;
+  color: white;
+  border-radius: 5px;  
+  border: 1px solid black;            
+}
+
+.account a {
+  color: inherit;            
+  text-decoration: none;
+}
+
+.menu-toggle {
+  display: none;
+  font-size: 28px;
+  cursor: pointer;
+  color: white;
+  z-index: 101;
+}
+
+/* Responsive: small screens */
+@media (max-width: 768px) {
+  .menu-toggle {
+    display: block; /* show hamburger */
+  }
+
+  .nav-links {
+    position: fixed;
+    top: 60px;
+    right: -250px; 
+    height: 100%;
+    width: 250px;
+    background: green;
+    flex-direction: column;
+    padding-top: 60px;
+    gap: 20px;
+    transition: right 0.3s ease;
+    justify-content: top;
+    align-items: center;
+  }
+
+  .nav-links.show {
+    right: 0; /* slide in from right */
+  }
+
+}

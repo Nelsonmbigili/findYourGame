@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>{{title}}</title>
+  <link rel="icon" type="image/png" href="/favicon.png" />
+  <link rel="stylesheet" href="/styles.css" />
+</head>
+
+<body>
+  <header>
+    <div class="container">
+      <nav class="navbar">
+        <a href="/" class="logo">
+          <img src="/favicon.png" alt="Logo" />
+          <span>FindYourGame</span>
+        </a>
+         <div class="menu-toggle" id="menu-toggle">
+          &#9776;
+        </div>
+        <ul class="nav-links" id="nav-links">
+          <li><a href="/">Home</a></li>
+          <li><a href="/events">Events</a></li>
+          <li><a href="/about">About</a></li>
+          <li class="account"><a href="/login">Get Started</a></li>
+        </ul>
+      
+      </nav>
+    </div>
+  </header>
+
+  <main class="container">
+    {{{body}}}
+  </main>
+
+  <footer>
+    <p>&copy; {{year}} FindYourGame. All rights reserved.</p>
+  </footer>
+
+  <!-- JS for hamburger menu -->
+  <script>
+    const menuToggle = document.getElementById("menu-toggle");
+    const navLinks = document.getElementById("nav-links");
+
+    menuToggle.addEventListener("click", () => {
+      navLinks.classList.toggle("show");
+
+      // Change icon between hamburger and X
+      if (navLinks.classList.contains("show")) {
+        menuToggle.innerHTML = "&times;"; // X icon
+      } else {
+        menuToggle.innerHTML = "&#9776;"; // Hamburger
+      }
+    });
+  </script>
+</body>
+</html>
