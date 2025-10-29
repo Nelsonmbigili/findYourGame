@@ -171,6 +171,10 @@ Some reference sites:
 - Auto-filter events based on stored preferences for a personalized experience. 
 - Require email Verification or phone number OTP verifications  
 
+### Unit testing with JavaScript (2 points)
+- I hope to use Mocha for some unit tests.  
+- Tests on some specific features like payments and Auth
+
 ### Event Payments (Stripe Integration) (1 point)
 - Integrate **Stripe** to handle payments for events that require fees.  
 - Users can pay **securely with credit/debit cards** directly on the event page.  
