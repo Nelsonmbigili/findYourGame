@@ -161,10 +161,12 @@ Some reference sites:
 ### Client-Side Input Validation (2 points)
 - Validate registration, login, and event creation forms.  
 - Provide real-time feedback for invalid input (e.g., required fields, numeric limits, email format). 
+- I hope to use [Validator.js](https://www.npmjs.com/package/validator) library
 
 ### Server-Side Validation (2 points)
 - Complement client-side validation to securely reject invalid or malicious data.  
 - Ensure events, dates, and fees meet business rules.  
+- I hope to use [Validator.js](https://www.npmjs.com/package/validator) library
 
 ### User Preferences with Cookies / localStorage (2 points)
 - Persist preferences such as favorite sports, notifications, or UI settings.  
