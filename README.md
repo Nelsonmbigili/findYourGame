@@ -156,7 +156,7 @@ Here is a simple Site Map
 Some reference sites:  
 [Username & Password](https://www.passportjs.org/tutorials/password/)<br>
 [Sign In with Google](https://www.passportjs.org/tutorials/google/)<br>
-[Sign In with Github](https://www.passportjs.org/tutorials/github/) 
+[Sign In with Github](https://www.passportjs.org/packages/passport-github2/) 
 
 ### Client-Side Input Validation (2 points)
 - Validate registration, login, and event creation forms.  
