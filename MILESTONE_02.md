@@ -12,7 +12,9 @@ Special Instructions for Using Form (or Login details if auth is part of your pr
 URL for form 
 ---
 https://findyourgame.onrender.com/signup
+
 https://findyourgame.onrender.com/signin
+
 https://findyourgame.onrender.com/forgotpassword
 
 URL for form result
