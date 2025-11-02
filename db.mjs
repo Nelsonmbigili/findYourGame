@@ -22,6 +22,8 @@ const userSchema = new mongoose.Schema({
     },
     select: false 
   },
+  resetToken: { type: String }, // Password reset token
+  resetTokenExpiry: { type: Date },
   createdEvents: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Event' }], // Arr of Reference to obj 
   joinedEvents: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Event' }], // Arr of Reference to obj 
   createdAt: { type: Date, default: Date.now }
