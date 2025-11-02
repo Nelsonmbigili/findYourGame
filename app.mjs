@@ -26,6 +26,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 app.set("view engine", "hbs");
+app.set('trust proxy', 1);
 app.use(express.static(path.join(__dirname, 'documentation')));
 app.use(express.urlencoded({ extended: false }));
 hbs.registerPartials(path.join(__dirname, 'views/partials'));

@@ -13,7 +13,7 @@ const transporter = nodemailer.createTransport({
 });
 
 export const sendPasswordResetEmail = async (toEmail, token) => {
-  const resetUrl = `http://localhost:${process.env.PORT || 3000}/resetpassword/${token}`;
+  const resetUrl = `https://findyourgame.onrender.com/:${process.env.PORT || 3000}/resetpassword/${token}`;
 
  const mailOptions = {
   from: `"FindYourGame Support" <${process.env.EMAIL_FROM}>`,
@@ -37,7 +37,7 @@ export const sendPasswordResetEmail = async (toEmail, token) => {
   html: `
         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto; padding: 20px;">
             <div style="text-align: center; margin-bottom: 20px;">
-              <img src="https://i.postimg.cc/tRYKFrPv/favicon.png" alt="FindYourGame" width="50" style="border-radius: 8px;"/>
+              <img src="https://findyourgame.onrender.com/favicon.png" alt="FindYourGame" width="50" style="border-radius: 8px;"/>
             </div>
 
             <h2 style="color:#333; text-align:center;">Reset Your Password</h2>
@@ -74,7 +74,7 @@ export const sendPasswordResetEmail = async (toEmail, token) => {
 
             <p style="font-size: 13px; color: #999; text-align:center;">
               🎮 FindYourGame — Discover. Join. Play.<br>
-              <a href="https://findyourgame.com" style="color:#4a6cf7;">Visit Website</a>
+              <a href="https://findyourgame.onrender.com" style="color:#4a6cf7;">Visit Website</a>
             </p>
         </div>
       `
