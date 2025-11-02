@@ -1,1 +1,14 @@
-<h1>The Events Page</h1>
+<div class="events-page-container">
+  <h1 class="events-page-title">Upcoming Sports Events</h1>
+
+  {{#if events.length}}
+    <div class="event-grid">
+      {{#each events}}
+        {{> eventCard this}}
+      {{/each}}
+    </div>
+  {{else}}
+    <p class="no-events-message">There are no upcoming events. Check back soon!</p>
+  {{/if}}
+</div>
+

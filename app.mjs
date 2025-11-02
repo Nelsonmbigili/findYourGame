@@ -17,15 +17,18 @@ import sanitize from 'mongo-sanitize';
 import session from "express-session";
 import passport from 'passport';
 import './passport-config.mjs';
-import { sendPasswordResetEmail } from "./email-config.mjs"
+import { sendPasswordResetEmail } from "./email-config.mjs";
+import hbs from 'hbs';
 
 
 const app = express();
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
+app.set("view engine", "hbs");
 app.use(express.static(path.join(__dirname, 'documentation')));
 app.use(express.urlencoded({ extended: false }));
+hbs.registerPartials(path.join(__dirname, 'views/partials'));
 
 app.use(session({
   secret: process.env.SESSION_SECRET, 
@@ -56,7 +59,6 @@ app.use((req, res, next) => {
 });
 
 
-app.set("view engine", "hbs");
 const allEvents=[];
 app.get('/', (req, res) => {
   
@@ -75,6 +77,7 @@ app.get("/about", (req,res)=>{
 
 app.get("/events", (req,res)=>{
   res.render("events",{});
+
 });
 
 app.get("/dashboard", (req,res)=>{
@@ -85,7 +88,7 @@ app.get("/signin", (req,res)=>{
   res.render("signin",{});
 });
 
-app.post("/signin", async  (req,res)=>{
+app.post("/signin", async (req,res)=>{
   const safeBody = sanitize(req.body);
   const { email, password} = safeBody;
 
@@ -116,10 +119,8 @@ app.post("/signup", async (req, res) => {
   const names = { firstName, secondName};
 
   try {
-    // Call the async signup function
-    const newUser = await signup(names, email, password);
+    await signup(names, email, password);
     
-    // On success, redirect the user to the sign-in page
     res.redirect("/signin"); 
 
   } catch (error) {
@@ -136,7 +137,6 @@ app.post("/signup", async (req, res) => {
 
 app.get('/login/federated/google', passport.authenticate('google'));
 
-// This is the callback route Google redirects to
 app.get('/oauth2/redirect/google',
   passport.authenticate('google', {
     failureRedirect: '/signin',  
@@ -144,9 +144,7 @@ app.get('/oauth2/redirect/google',
     session: false           
   }),
   async (req, res) => {
-    // 'req.user' is the Mongoose user from our passport-config
     try {
-      // Create the same user object that our local 'signin' function creates
       const userForSession = {
         id: req.user._id,
         email: req.user.email,
@@ -167,11 +165,42 @@ app.get('/oauth2/redirect/google',
   }
 );
 
+app.get('/login/federated/github',
+  passport.authenticate('github', { scope: ['user:email'] })
+);
+
+app.get('/oauth2/redirect/github',
+  passport.authenticate('github', {
+    failureRedirect: '/signin',
+    failureMessage: true,
+    session: false 
+  }),
+  async (req, res) => {
+    try {
+      const userForSession = {
+        id: req.user._id,
+        email: req.user.email,
+        username: req.user.username,
+        name: req.user.name
+      };
+      
+      await startAuthenticatedSession(req, userForSession);
+      res.redirect("/events"); 
+      
+    } catch (error) {
+      console.error("GitHub Session Error:", error.message);
+      res.status(400).render("signin", { 
+        error: "Error starting GitHub session. Please try again.",
+        title: 'Sign In - FindYourGame'
+      });
+    }
+  }
+);
+
 
 app.get("/signout", async (req, res) => {
   try {
     await endAuthenticatedSession(req);
-    // Redirect to the home page after session is destroyed
     res.redirect("/");
   } catch (error) {
     console.error("Signout Error:", error);

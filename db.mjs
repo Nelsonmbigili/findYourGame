@@ -15,10 +15,11 @@ const userSchema = new mongoose.Schema({
   username: { type: String, required: true },
   email: { type: String, required: true },
   googleId: { type: String, unique: true, sparse: true },
+  githubId: { type: String, unique: true, sparse: true },
   password: { 
     type: String, 
     required: function() {
-      return !this.googleId;
+      return !this.googleId && !this.githubId;;
     },
     select: false 
   },
