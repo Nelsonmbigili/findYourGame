@@ -17,6 +17,7 @@
     "hbs": "^4.2.0",
     "mongo-sanitize": "^1.1.0",
     "mongoose": "^8.19.2",
+    "nodemailer": "^7.0.10",
     "nodemon": "^3.1.10",
     "passport": "^0.7.0",
     "passport-google-oauth20": "^2.0.0",
