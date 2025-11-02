@@ -214,7 +214,7 @@ input {
   row-gap: 10px;
 }
 
-.google-btn, .facebook-btn {
+.google-btn, .github-btn {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -227,7 +227,7 @@ input {
   gap: 8px;
 }
 
-.google-btn img, .facebook-btn img {
+.google-btn img, .github-btn img {
   width: 18px;
   height: 18px;
 }

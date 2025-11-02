@@ -82,7 +82,7 @@ export const sendPasswordResetEmail = async (toEmail, token) => {
 
 
   try {
-    let info = await transporter.sendMail(mailOptions);
+    const info = await transporter.sendMail(mailOptions);
     console.log('Password reset email sent: %s', info.messageId);
     // Preview URL for Ethereal:
     if (process.env.EMAIL_HOST === 'smtp.ethereal.email') {

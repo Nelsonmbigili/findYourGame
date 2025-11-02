@@ -17,7 +17,7 @@ const generateUniqueUsername = async (firstName) => {
   while (exists) {
     username = generateUsername(firstName);
     const user = await User.findOne({ username });
-    if (!user) exists = false;
+    if (!user) {exists = false;}
   }
 
   return username;
@@ -80,35 +80,35 @@ const generatePasswordResetToken = async (user) => {
 };
 
 const validatePasswordResetToken = async (unhashedToken) => {
-  // 1. Hash the token from the URL to match the one in the DB
+  // Hash the token from the URL to match the one in the DB
   const resetToken = crypto
     .createHash('sha256')
     .update(unhashedToken)
     .digest('hex');
 
-  // 2. Find the user with this token AND make sure it hasn't expired
+  // Find the user with this token AND make sure it hasn't expired
   const user = await User.findOne({
     resetToken: resetToken,
-    resetTokenExpiry: { $gt: Date.now() } // $gt means "greater than"
+    resetTokenExpiry: { $gt: Date.now() } 
   });
 
-  return user; // Will be the user object or null
+  return user; 
 };
 
 const resetUserPassword = async (user, newPassword, confirmPassword) => {
-  // 1. Validate passwords
+  // Validate passwords
   if (newPassword !== confirmPassword) {
     throw { message: 'Passwords do not match.' };
   }
   
-  // 2. Hash the new password (this also checks length)
+  // Hash the new password 
   user.password = await hashPassword(newPassword);
 
-  // 3. Clear the reset token fields
+  // Clear the reset token fields
   user.resetToken = undefined;
   user.resetTokenExpiry = undefined;
 
-  // 4. Save the user
+  // Save the user
   await user.save();
 };
 
@@ -193,7 +193,7 @@ export {
   validatePasswordResetToken,
   resetUserPassword,
   findUserByEmail 
-}
+};
 
 
 
