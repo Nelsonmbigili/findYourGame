@@ -3,7 +3,7 @@ body {
   margin: 0;
   min-height: 100vh;          
   display: flex;
-  flex-direction: column;     
+  flex-direction: column; 
   background-color: #f8f9fa;
   color: #333;
 }
@@ -66,7 +66,11 @@ header {
 }
 
 main {
-  flex: 1;                   
+  flex: 1;
+  display: flex;
+  justify-content: center;   
+  align-items: center;       
+  min-height: calc(100vh - 160px);
   padding: 30px 0;
 }
 
@@ -130,5 +134,116 @@ footer {
   .nav-links.show {
     right: 0; /* slide in from right */
   }
-
 }
+
+
+.card {
+  background-color: white;
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  width: 320px;
+  padding: 30px;
+  display: flex;
+  flex-direction: column;
+  row-gap: 15px;
+  text-align: center;
+}
+
+@media (max-width: 768px) {
+  .card {
+    width: 250px;
+    padding: 40px;
+  }
+}
+
+h2 {
+  margin: 0;
+  color: #222;
+}
+
+form {
+  display: flex;
+  flex-direction: column;
+  row-gap: 10px;
+  text-align: left;
+}
+
+label {
+  font-size: 14px;
+  color: #333;
+}
+
+input {
+  padding: 10px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  font-size: 14px;
+}
+
+.name-row {
+  display: flex;
+  gap: 10px;
+  width: 100%;
+}
+
+.name-row .field {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+   min-width: 0;
+}
+
+
+.signin-btn {
+  background-color: green;
+  color: white;
+  border: none;
+  padding: 10px;
+  border-radius: 6px;
+  font-size: 15px;
+  cursor: pointer;
+}
+
+.signin-btn:hover {
+  background-color: darkgreen;
+}
+
+.social-buttons {
+  display: flex;
+  flex-direction: column;
+  row-gap: 10px;
+}
+
+.google-btn, .facebook-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid green;
+  background: white;
+  border-radius: 6px;
+  padding: 10px;
+  font-size: 14px;
+  cursor: pointer;
+  gap: 8px;
+}
+
+.google-btn img, .facebook-btn img {
+  width: 18px;
+  height: 18px;
+}
+
+.signup-text {
+  font-size: 14px;
+  color: #333;
+}
+
+.signup-text a {
+  color: green;
+  text-decoration: none;
+  font-weight: bold;
+}
+.signup-text a:hover {
+  text-decoration: underline;
+}
+
+

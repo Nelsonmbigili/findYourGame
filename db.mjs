@@ -8,9 +8,20 @@ mongoose.connect(process.env.DNS)
 
 // Schemas
 const userSchema = new mongoose.Schema({
+  name: {
+    firstName: { type: String, required: true },
+    secondName: { type: String, required: true },
+  },
   username: { type: String, required: true },
   email: { type: String, required: true },
-  hash: { type: String, required: true },
+  googleId: { type: String, unique: true, sparse: true },
+  password: { 
+    type: String, 
+    required: function() {
+      return !this.googleId;
+    },
+    select: false 
+  },
   createdEvents: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Event' }], // Arr of Reference to obj 
   joinedEvents: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Event' }], // Arr of Reference to obj 
   createdAt: { type: Date, default: Date.now }
