@@ -16,14 +16,20 @@
           <img src="/favicon.png" alt="Logo" />
           <span>FindYourGame</span>
         </a>
-         <div class="menu-toggle" id="menu-toggle">
+        <div class="menu-toggle" id="menu-toggle">
           &#9776;
         </div>
         <ul class="nav-links" id="nav-links">
           <li><a href="/">Home</a></li>
           <li><a href="/events">Events</a></li>
           <li><a href="/about">About</a></li>
-          <li class="account"><a href="/login">Get Started</a></li>
+          {{#if user}}
+            <li class="account"><a href="/dashboard">My Account</a></li>
+            <li class="account"><a href="/signout">Sign out</a></li>
+          {{else}}
+            <li class="account"><a href="/signin">Log in</a></li>
+            <li class="account"><a href="/signup">Sign up</a></li>
+          {{/if}}
         </ul>
       
       </nav>
