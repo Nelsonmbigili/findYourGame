@@ -151,12 +151,12 @@ Here is a simple Site Map
 ### User Authentication (5 points)
 - Implement dual authentication:  
   - **Local strategy**: users register/login with email/username and password.  
-  - **OAuth (Open Authorization)**: users can optionally log in with Google or Facebook.  
+  - **OAuth (Open Authorization)**: users can optionally log in with Google or Github.  
 - Ensure secure password storage (hashed), session management, and encrypted transfers.  
 Some reference sites:  
 [Username & Password](https://www.passportjs.org/tutorials/password/)<br>
 [Sign In with Google](https://www.passportjs.org/tutorials/google/)<br>
-[Sign In with Facebook](https://www.passportjs.org/tutorials/facebook/)
+[Sign In with Github](https://www.passportjs.org/tutorials/github/) 
 
 ### Client-Side Input Validation (2 points)
 - Validate registration, login, and event creation forms.  
