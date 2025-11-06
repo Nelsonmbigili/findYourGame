@@ -1,14 +1,48 @@
 <div class="events-page-container">
   <h1 class="events-page-title">Upcoming Sports Events</h1>
-
-  {{#if events.length}}
+  
+  <!-- This Week -->
+  {{#if thisWeekEvents.length}}
+  <div class="event-section">
+    <div class="section-header">
+      <h2 class="section-title">This Week</h2>
+      <a href="/events/thisweek" class="more-btn">More →</a>
+    </div>
     <div class="event-grid">
-      {{#each events}}
+      {{#each thisWeekEvents}}
         {{> eventCard this}}
       {{/each}}
     </div>
-  {{else}}
-    <p class="no-events-message">There are no upcoming events. Check back soon!</p>
+  </div>
+  {{/if}}
+
+  <!-- This Month -->
+  {{#if thisMonthEvents.length}}
+  <div class="event-section">
+    <div class="section-header">
+      <h2 class="section-title">This Month</h2>
+      <a href="/events/thismonth" class="more-btn">More →</a>
+    </div>
+    <div class="event-grid">
+      {{#each thisMonthEvents}}
+        {{> eventCard this}}
+      {{/each}}
+    </div>
+  </div>
+  {{/if}}
+
+  <!-- Future Events -->
+  {{#if futureEvents.length}}
+  <div class="event-section">
+    <div class="section-header">
+      <h2 class="section-title">Future Events</h2>
+      <a href="/events/future" class="more-btn">More →</a>
+    </div>
+    <div class="event-grid">
+      {{#each futureEvents}}
+        {{> eventCard this}}
+      {{/each}}
+    </div>
+  </div>
   {{/if}}
 </div>
-

@@ -19,6 +19,11 @@ import passport from 'passport';
 import './passport-config.mjs';
 import { sendPasswordResetEmail } from "./email-config.mjs";
 import hbs from 'hbs';
+import { 
+  getFutureEvents,
+  getThisWeekEvents,
+  getThisMonthEvents,
+} from "./services.mjs";
 
 
 const app = express();
@@ -59,30 +64,54 @@ app.use((req, res, next) => {
   next();
 });
 
-
-const allEvents=[];
 app.get('/', (req, res) => {
-  
-const featuredEvents = allEvents.slice(0, 3);
 
   res.render('index', { 
     title: 'Home - FindYourGame', 
-    featuredEvents: featuredEvents 
+    featuredEvents: {} 
   });
 });
+
 
 app.get("/about", (req,res)=>{
 	res.render("about",{});
 
 });
 
-app.get("/events", (req,res)=>{
-  res.render("events",{});
+app.get("/events", async (req, res) => {
+  try {
+    const thisWeekEvents = await getThisWeekEvents();
+    const thisMonthEvents = await getThisMonthEvents();
+    const futureEvents = await getFutureEvents();
 
+    res.render("events", {
+      title: "Events",
+      thisWeekEvents,
+      thisMonthEvents,
+      futureEvents,
+      user: req.session?.user || null
+    });
+
+  } catch (error) {
+    console.error("Error fetching events:", error);
+    res.status(500).render("events", {
+      title: "Events",
+      thisWeekEvents: [],
+      thisMonthEvents: [],
+      futureEvents: [],
+      error: "Unable to load events at this time",
+      user: req.session?.user || null
+    });
+  }
 });
 
-app.get("/dashboard", (req,res)=>{
-  res.render("dashboard",{});
+app.get("/dashboard", (req, res) => {
+  const user = req.session.user;
+  console.log("User Object: ", user);
+  res.render("dashboard", {
+    title: "Dashboard",
+    user
+  });
 });
 
 app.get("/signin", (req,res)=>{
