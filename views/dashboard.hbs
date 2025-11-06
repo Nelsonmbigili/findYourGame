@@ -1,7 +1,57 @@
-<h1>Dashboard</h1>
+<div class="dashboard-container">
 
-	<div class="dashboard-card">
-		<h2>Welcome, {{user.name.firstName}} {{user.name.secondName}}</h2>
-		<p><strong>Username:</strong> {{user.username}}</p>
-		<p><strong>Email:</strong> {{user.email}}</p>
-	</div>
+  <em>More features Coming.....!</em>
+
+
+  <h1 class="dashboard-title">Welcome, {{user.name.firstName}} {{user.name.secondName}}</h1>
+
+
+  <!-- User Details Card -->
+  <div class="user-card">
+    <div class="user-field">
+      <label>Name</label>
+      <p>{{user.name.firstName}} {{user.name.secondName}}</p>
+    </div>
+
+    <div class="user-field">
+      <label>Email</label>
+      <p>{{user.email}}</p>
+    </div>
+
+    <div class="user-field">
+      <label>Phone</label>
+      <p>{{#if user.phone}}{{user.phone}}{{else}}Not provided{{/if}}</p>
+    </div>
+
+    <div class="user-field">
+      <label>About</label>
+      <p>{{#if user.about}}{{user.about}}{{else}}Tell us about yourself...{{/if}}</p>
+    </div>
+
+    <div class="user-field">
+      <label>Created Events</label>
+      {{#if user.createdEvents.length}}
+        <ul>
+          {{#each user.createdEvents}}
+            <li>{{this.title}} - {{this.formattedDate}}</li>
+          {{/each}}
+        </ul>
+      {{else}}
+        <p>No events created yet.</p>
+      {{/if}}
+    </div>
+
+    <div class="user-field">
+      <label>Joined Events</label>
+      {{#if user.joinedEvents.length}}
+        <ul>
+          {{#each user.joinedEvents}}
+            <li>{{this.title}} - {{this.formattedDate}}</li>
+          {{/each}}
+        </ul>
+      {{else}}
+        <p>No events joined yet.</p>
+      {{/if}}
+    </div>
+  </div>
+</div>

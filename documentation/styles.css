@@ -445,5 +445,50 @@ input {
     align-items: flex-start;
     gap: 12px;
   }
+}
 
+
+/*Dashboard Styles*/
+.dashboard-container {
+  max-width: 800px;
+  margin: 2rem auto;
+  padding: 1rem;
+}
+
+.dashboard-title {
+  text-align: center;
+  margin-bottom: 1.5rem;
+}
+
+.avatar-container {
+  text-align: center;
+  margin-bottom: 1rem;
+}
+
+.avatar-img {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.user-card {
+  background: #f7f7f7;
+  padding: 1rem 1.5rem;
+  border-radius: 8px;
+}
+
+.user-field {
+  margin-bottom: 1rem;
+}
+
+.user-field label {
+  font-weight: bold;
+  display: block;
+  margin-bottom: 0.3rem;
+}
+
+.user-field p, .user-field ul {
+  margin: 0;
+  padding-left: 1rem;
 }

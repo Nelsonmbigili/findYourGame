@@ -105,6 +105,17 @@ app.get("/events", async (req, res) => {
   }
 });
 
+app.get('/events/:id/join', (req, res) => {
+  
+  res.render('comingSoon', { });
+});
+
+
+app.get('/events/search', (req, res) => {
+  res.render('comingSoon');
+});
+
+
 app.get("/dashboard", (req, res) => {
   const user = req.session.user;
   console.log("User Object: ", user);
