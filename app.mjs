@@ -24,6 +24,8 @@ import {
   getThisWeekEvents,
   getThisMonthEvents,
   getSearchResults,
+  getSportsOptions,
+  getOptionsFromEvents,
 } from "./services.mjs";
 
 
@@ -112,6 +114,41 @@ app.get("/events", async (req, res) => {
             else if (search.filter_option === "afternoon") query.time = { $gte: "12:00", $lt: "18:00" };
             else if (search.filter_option === "evening") query.time = { $gte: "18:00", $lt: "22:00" };
             break;
+          case "date":
+            // Today logic
+            const today = new Date();
+            today.setHours(0, 0, 0, 0); 
+            const endOfToday = new Date(today);
+            endOfToday.setHours(23, 59, 59, 999);
+            // Next Day logic
+            const tomorrow = new Date(today);
+            tomorrow.setDate(tomorrow.getDate()+1);
+            tomorrow.setHours(0, 0, 0, 0); 
+            const endOfTomorrow = new Date(tomorrow);
+            endOfTomorrow.setHours(23, 59, 59, 999);
+
+            // Next Week Logic
+            const endOfWeek = new Date(today);
+            endOfWeek.setDate(endOfWeek.getDate() + 7);
+            endOfWeek.setHours(23, 59, 59, 999);
+            const endOfMonth = new Date(today.getFullYear(), today.getMonth() + 1, 0);
+            endOfMonth.setHours(23, 59, 59, 999);
+
+            if (search.filter_option === "today") {
+            query.date = { $gte: today, $lte: endOfToday };
+            } 
+            else if (search.filter_option === "tomorrow") {
+            query.date = { $gte: today, $lte: endOfTomorrow };
+            }
+            else if (search.filter_option === "thisWeek") {
+            query.date = { $gte: today, $lte: endOfWeek };
+            } 
+            else if (search.filter_option === "thisMonth") {
+              const oneWeekFromToday = new Date(today);
+              oneWeekFromToday.setDate(oneWeekFromToday.getDate() + 7);
+              query.date = { $gt: oneWeekFromToday, $lte: endOfMonth };
+            }
+            break;
           case "fee":
             query.fee = search.filter_option === "free" ? 0 : { $gt: 0 };
             break;
@@ -124,6 +161,7 @@ app.get("/events", async (req, res) => {
             break;
         }
       }
+      console.log("Query: ", query);
 
       searchResults = await getSearchResults(query);
     }
@@ -150,6 +188,56 @@ app.get("/events", async (req, res) => {
     });
   }
 });
+
+// Filter Options 
+app.get("/events/filter-options/:field", async (req, res) => {
+  const { field } = req.params;
+  try {
+    let options = [];
+
+    switch(field) {
+      case "sport":
+        options =  await getSportsOptions();
+        break;
+      case "location":
+        options = await getOptionsFromEvents("location");
+        break;
+      case "time":
+        options = [
+          { value: "morning", label: "Morning" },
+          { value: "afternoon", label: "Afternoon" },
+          { value: "evening", label: "Evening" }
+        ];
+        break;
+      case "date":
+        options = [
+          { value: "today", label: "Today" },
+          { value: "tomorrow", label: "Tomorrow" },
+          { value: "thisWeek", label: "This Week" },
+          { value: "thisMonth", label: "This Month" }
+        ];
+        break;
+      case "fee":
+        options = [
+          { value: "free", label: "Free" },
+          { value: "paid", label: "Paid" }
+        ];
+        break;
+      case "availability":
+        options = [
+          { value: "available", label: "Available" },
+          { value: "full", label: "Full" }
+        ];
+        break;
+    }
+
+    res.json(options);
+  } catch(err) {
+    console.error(err);
+    res.status(500).json({ message: "Server error" });
+  }
+});
+
 
 app.get('/events/:id/join', (req, res) => {
   

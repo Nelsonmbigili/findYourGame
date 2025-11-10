@@ -15,12 +15,13 @@
           </form>
 
           <!-- Filter Section -->
-          <form class="filter-form">
+          <form method = "GET" action="events" class="filter-form">
             {{!-- <label for="filter-by">Filter by:</label> --}}
             <select id="filter-by" name="filter_by">
                <option value="sport">Sport Type</option>
                <option value="location">Location</option>
-               <option value="time">Time of Day</option>
+               <option value="time">Time </option>
+               <option value="date">Date </option>
                <option value="fee">Fee</option>
                <option value="availability">Availability</option>
             </select>
@@ -37,7 +38,7 @@
   {{#if searchResults}}
         <div class="event-section">
           <div class="section-header">
-            <h2 class="section-title">Search Results for {{search.filter_by}} {{search.filter_option}} {{search.search_query}}</h2>
+            <h2 class="section-title">Search Results for {{search.filter_by}} => {{search.filter_option}} {{search.search_query}}</h2>
         </div>
           {{#if searchResults.length}}
             <div class="event-grid">
@@ -56,7 +57,7 @@
       <div class="event-section">
         <div class="section-header">
           <h2 class="section-title">This Week</h2>
-          <a href="/events/search?thisweek" class="more-btn">More →</a>
+          <a href="/events?filter_by=date&filter_option=thisWeek" class="more-btn">More →</a>
         </div>
         <div class="event-grid">
           {{#each thisWeekEvents}}
@@ -70,8 +71,8 @@
       <div class="event-section">
         <div class="section-header">
           <h2 class="section-title">This Month</h2>
-          <a href="/events/search?thismonth" thismonth" class="more-btn">More →</a>
-        </div>
+          <a href="/events?filter_by=date&filter_option=thisMonth" class="more-btn">More →</a>
+       </div>
         <div class="event-grid">
           {{#each thisMonthEvents}}
             {{> eventCard this}}
@@ -96,3 +97,30 @@
      {{/if}}
   {{/if}}
 </div>
+
+
+<script>
+  const filterBySelect = document.getElementById("filter-by");
+  const filterOptionSelect = document.getElementById("filter-option");
+
+  filterBySelect.addEventListener("change", async () => {
+    const field = filterBySelect.value;
+    filterOptionSelect.innerHTML = '<option value="">Choose Option</option>'; // reset
+
+    if (!field) return;
+
+    try {
+      const res = await fetch(`/events/filter-options/${field}`);
+      const options = await res.json();
+
+      options.forEach(opt => {
+        const optionEl = document.createElement("option");
+        optionEl.value = opt.value;
+        optionEl.textContent = opt.label;
+        filterOptionSelect.appendChild(optionEl);
+      });
+    } catch (err) {
+      console.error(err);
+    }
+  });
+</script>
