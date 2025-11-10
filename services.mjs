@@ -75,8 +75,9 @@ export const getSearchResults = async (filter) => {
 };
 
 export const getSportsOptions = async () =>{
-   const sports = await Sport.find();
-   const options = sports.map(sport => ({ value: sport._id, label: sport.name }));
+   const sports = await Sport.find()
+                    .lean();
+   const options = sports.map(sport => ({ value: sport.name, label: sport.name }));
    return options;
 }
 
@@ -86,4 +87,7 @@ export const getOptionsFromEvents = async (optionName) =>{
    return options;
 }
 
-
+export const getSportIdByName = async (sportName) => {
+  const sport = await Sport.findOne({ name: sportName }).lean();
+  return sport?._id || null;
+};
