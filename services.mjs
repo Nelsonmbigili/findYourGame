@@ -55,3 +55,9 @@ export const getFutureEvents = async () => {
 
   return formatEvents(events);
 };
+
+
+export const getSearchResults = async(filter)  =>{
+  return await getThisMonthEvents();
+
+}

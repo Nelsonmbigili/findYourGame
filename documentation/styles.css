@@ -428,8 +428,8 @@ input {
   }
 
   .events-page-title {
-    font-size: 28px;
-    margin-bottom: 32px;
+    font-size: 20px;
+    margin-bottom: 20px;
   }
 
   .section-title {
@@ -441,8 +441,6 @@ input {
   }
 
   .section-header {
-    flex-direction: column;
-    align-items: flex-start;
     gap: 12px;
   }
 }
@@ -491,4 +489,155 @@ input {
 .user-field p, .user-field ul {
   margin: 0;
   padding-left: 1rem;
+}
+
+
+/*Search and Filter events*/
+.search-filter-container {
+  margin-bottom: 5px;
+  background-color: lightgray;
+  padding: 5px;
+}
+
+.filter_and_search {
+  background: #ffffff;
+  padding: 20px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  max-width: 100%;
+}
+
+.filter-form, 
+.search-form {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  width: 100%;
+}
+
+.filter-form label,
+.search-form label {
+  font-weight: 400;
+  font-size: 15px;
+  color: #333;
+  margin-bottom: 8px;
+}
+
+
+.filter-form select,
+.search-box input {
+  width: 100%;
+  padding: 12px 15px;
+  font-size: 16px; 
+  border-radius: 5px;
+  border: 2px solid #ddd;
+  background-color: #fff;
+  box-sizing: border-box;
+  transition: border-color 0.3s;
+}
+
+.filter-form select:focus,
+.search-box input:focus {
+  outline: none;
+  border-color: green;
+}
+
+.search-box {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 100%;
+}
+
+button.search-btn,
+button.apply-btn {
+  background-color: green;
+  color: white;
+  border: none;
+  padding: 14px 20px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: 600;
+  width: 100%;
+  transition: background-color 0.3s;
+  min-height: 48px; 
+}
+
+button.search-btn:hover,
+button.apply-btn:hover {
+  background-color: darkgreen;
+}
+
+button.search-btn:active,
+button.apply-btn:active {
+  background-color: #004494;
+}
+
+/* Filter selects stacked on mobile */
+.filter-form select {
+  margin-bottom: 10px;
+}
+
+/* Tablet breakpoint */
+@media (min-width: 600px) {
+  .search-filter-container {
+    padding: 20px;
+  }
+  
+  .filter_and_search {
+    padding: 25px;
+  }
+  
+  .search-box {
+    flex-direction: row;
+    align-items: stretch;
+  }
+  
+  .search-box input {
+    flex: 1;
+  }
+  
+  button.search-btn {
+    width: auto;
+    min-width: 120px;
+  }
+}
+
+
+@media (min-width: 900px) {
+  .filter_and_search {
+    flex-direction: row;
+    align-items: flex-end;
+    gap: 20px;
+    padding: 20px 30px;
+  }
+  
+  .search-form,
+  .filter-form {
+    flex: 1;
+  }
+  
+  .filter-form {
+    flex-direction: row;
+    align-items: flex-end;
+    gap: 10px;
+  }
+  
+  .filter-form label {
+    display: none; 
+  }
+  
+  .filter-form select {
+    flex: 1;
+    margin-bottom: 0;
+    min-width: 150px;
+  }
+  
+  button.apply-btn {
+    width: auto;
+    min-width: 140px;
+  }
 }
