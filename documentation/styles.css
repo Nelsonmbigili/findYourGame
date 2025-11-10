@@ -641,3 +641,162 @@ button.apply-btn:active {
     min-width: 140px;
   }
 }
+/*----------- Event Details Page ------------*/
+.event-container {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  max-width: 900px;
+  margin: auto;
+  padding: 20px;
+  color: #333;
+  background: #f9f9f9;
+  border-radius: 10px;
+}
+
+.event-title {
+  font-size: 32px;
+  text-align: left;
+  font-weight: 700;
+  margin-bottom: 10px;
+  color: black;
+}
+
+.event-about {
+  text-align: left;
+  font-size: 16px;
+  color: #555;
+  line-height: 1.6;
+}
+
+.event-about h2 {
+  font-size: 22px;
+  margin-bottom: 10px;
+  color: #2c3e50;
+}
+
+.event-details-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 10px;
+}
+
+.event-details-table th,
+.event-details-table td {
+  padding: 12px 15px;
+  text-align: left;
+}
+
+.event-details-table th {
+  background: green;
+  color: #fff;
+  font-weight: 600;
+}
+
+.event-details-table td {
+  background: #fff;
+  border-bottom: 1px solid #ddd;
+}
+
+.event-details-table tr:last-child td {
+  border-bottom: none;
+}
+
+.participants-section {
+  text-align: left;
+}
+
+.participants-section h2 {
+  font-size: 20px;
+  margin-bottom: 10px;
+  color: #2c3e50;
+}
+
+.avatars {
+  display: flex;
+  justify-content: flex-start;
+  flex-wrap: wrap;
+  gap: -50px;
+}
+
+.avatar {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background: green;
+  color: white;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  border: 3px solid #fff;
+  overflow: hidden;
+  margin-left: -15px;
+}
+
+.avatar:hover {
+  transform: scale(1.01);
+}
+
+.avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.avatar.more {
+  background: green;
+}
+
+.organizer-section h2 {
+  font-size: 20px;
+  margin-bottom: 10px;
+  color: #2c3e50;
+}
+
+.organizer {
+  display: flex;
+  justify-content: left;
+  align-items: center;
+
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.organizer-avatar {
+  width: 50px;
+  height: 50px;
+  background: green;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  font-weight: bold;
+  font-size: 18px;
+}
+
+.event-actions {
+  display: flex;
+  justify-conten: left;
+  flex-wrap: wrap;
+  gap: 12px;
+  padding: 20px 0;
+}
+
+.btn {
+  padding: 12px 20px;
+  background: green;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  text-decoration: none;
+  cursor: pointer;
+  font-weight: 600;
+  transition: background 0.2s ease;
+}
+
+.btn:hover {
+  background: darkgreen;
+}

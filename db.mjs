@@ -33,14 +33,24 @@ const userSchema = new mongoose.Schema({
 
 const eventSchema = new mongoose.Schema({
   title: { type: String, required: true },
+  description: { type: String },
   sport: { type: mongoose.Schema.Types.ObjectId, ref: 'Sport', required: true },
   location: { type: String, required: true },  
   date: { type: Date, required: true },
   time: { type: String, required: true },
   fee: { type: Number, default: 0 },
   slots: { type: Number, required: true },
+  requirements: { type: String },
   owner: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true }, // Reference to obj
-  participants: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }], // Arr of Reference to obj
+  participants: [{
+    _id: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
+    name: {
+      firstName: { type: String, required: true },
+      secondName: { type: String, required: true }
+    },
+    email: { type: String, required: true },
+    image: { type: String, default: null }
+  }],                                                                    // Arr of Reference to obj
   createdAt: { type: Date, default: Date.now }
 });
 

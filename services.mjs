@@ -1,16 +1,23 @@
 import {Event, Sport} from './db.mjs'; 
 
-const formatEvents = (events) => events.map(event => {
-  const dateObj = new Date(event.date);
-  const optionsDate = { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric' };
-  const optionsTime = { hour: '2-digit', minute: '2-digit', hour12: true };
-  return {
-    ...event,
-    formattedDate: dateObj.toLocaleDateString('en-US', optionsDate),
-    formattedTime: dateObj.toLocaleTimeString('en-US', optionsTime),
-    slotsRemaining: event.slots - (event.participants?.length || 0)
-  };
-});
+
+const formatEvents = (events) => {
+  if (!Array.isArray(events)) events = [events]; // handle single event
+  
+  return events.map(event => {
+    const dateObj = new Date(event.date);
+    const optionsDate = { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric' };
+    const optionsTime = { hour: '2-digit', minute: '2-digit', hour12: true };
+
+    return {
+      ...event,
+      formattedDate: dateObj.toLocaleDateString('en-US', optionsDate),
+      formattedTime: dateObj.toLocaleTimeString('en-US', optionsTime),
+      slotsRemaining: event.slots - (event.participants?.length || 0)
+    };
+  });
+};
+
 
 export const getThisWeekEvents = async () => {
   const today = new Date();
@@ -91,3 +98,13 @@ export const getSportIdByName = async (sportName) => {
   const sport = await Sport.findOne({ name: sportName }).lean();
   return sport?._id || null;
 };
+
+export const getEventById = async (id) => {
+  const event = await Event.findOne({ _id: id })
+    .populate('sport')           
+    .populate('owner', 'name email') 
+    .populate('participants', 'name email') 
+    .lean();
+
+  return formatEvents(event)[0];
+}

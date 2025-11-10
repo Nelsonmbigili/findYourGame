@@ -1,0 +1,110 @@
+<div class="event-container">
+
+  <!-- Event Title -->
+  <h1 class="event-title">{{event.title}}</h1>
+
+  <!-- About Event / Description -->
+  {{#if event.description}}
+    <section class="event-about">
+      <p>{{event.description}}</p>
+    </section>
+  {{/if}}
+
+  <!-- Event Details -->
+  <section class="event-details">
+    <h3>Event Details</h3>
+    <table class="event-details-table">
+      <tr>
+        <th>🏃 Sport</th>
+        <td>{{event.sport.name}}</td>
+      </tr>
+      <tr>
+        <th>📍 Location</th>
+        <td>{{event.location}}</td>
+      </tr>
+      <tr>
+        <th>📅 Date & Time</th>
+        <td>{{event.formattedDate}} at {{event.formattedTime}}</td>
+      </tr>
+      <tr>
+        <th>💰 Fee</th>
+        <td>
+          {{#if event.fee}}
+            ${{event.fee}}
+          {{else}}
+            Free!
+          {{/if}}
+        </td>
+      </tr>
+      {{#if event.requirements}}
+      <tr>
+        <th>📝 Requirements</th>
+        <td>{{event.requirements}}</td>
+      </tr>
+      {{/if}}
+      <tr>
+        <th>🎯 Slots</th>
+        <td>{{event.participants.length}} / {{event.slots}} filled</td>
+      </tr>
+    </table>
+  </section>
+
+  <!-- Registered Participants -->
+  {{#if showParticipants}}
+    <section class="participants-section">
+      <h3>Participants</h3>
+      <div class="avatars">
+        {{#each participants}}
+          <div class="avatar" title="{{this.name.firstName}} {{this.name.secondName}}">
+            {{#if this.image}}
+              <img src="{{this.image}}" alt="{{this.name.firstName}}">
+            {{else}}
+              {{this.name.firstName.[0]}}{{this.name.secondName.[0]}}
+            {{/if}}
+          </div>
+        {{/each}}
+
+        {{#if hasMoreParticipants}}
+          <div class="avatar more">+{{remainingCount}}</div>
+        {{/if}}
+      </div>
+    </section>
+  {{/if}}
+
+  <!-- Organizer Info -->
+  <section class="organizer-section">
+    <h3>Organizer</h3>
+    <div class="organizer">
+      <div class="organizer-avatar">{{ownerInitials}}</div>
+      <div class="organizer-details">
+        <p>{{event.owner.name.firstName}} {{event.owner.name.secondName}}</p>
+        <p>{{event.owner.email}}</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Action Buttons -->
+  <section class="event-actions">
+    {{#if user}}
+      {{#if owner}}
+        <a href="/events/{{event._id}}/edit" class="btn">✏️ Edit</a>
+        <form action="/events/{{event._id}}/delete" onsubmit="return confirm('Delete this event?')" style="display:inline;">
+          <button type="submit" class="btn btn-delete">🗑️ Delete</button>
+        </form>
+      {{else if isParticipant}}
+        <form action="/events/{{event._id}}/leave" >
+          <button type="submit" class="btn">Leave Event</button>
+        </form>
+      {{else if isFull}}
+        <button class="btn" disabled>Event Full</button>
+      {{else}}
+        <form action="/events/{{event._id}}/join" >
+          <button type="submit" class="btn">➕ Register</button>
+        </form>
+      {{/if}}
+    {{else}}
+      <a href="/signin" class="btn">Sign in to Register</a>
+    {{/if}}
+  </section>
+
+</div>
