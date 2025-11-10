@@ -26,6 +26,7 @@ import {
   getSearchResults,
   getSportsOptions,
   getOptionsFromEvents,
+  getSportIdByName,
 } from "./services.mjs";
 
 
@@ -83,7 +84,7 @@ app.get("/about", (req,res)=>{
 
 app.get("/events", async (req, res) => {
   try {
-    const search = req.query;
+    const search = sanitize(req.query);
 
     const thisWeekEvents = await getThisWeekEvents();
     const thisMonthEvents = await getThisMonthEvents();
@@ -104,7 +105,9 @@ app.get("/events", async (req, res) => {
       if (search.filter_by && search.filter_option) {
         switch (search.filter_by) {
           case "sport":
-            query.sport = search.filter_option;
+            const sportId = await getSportIdByName(search.filter_option);
+            if (sportId) query.sport = sportId;
+            else return [];
             break;
           case "location":
             query.location = search.filter_option;
