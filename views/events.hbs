@@ -1,48 +1,98 @@
 <div class="events-page-container">
   <h1 class="events-page-title">Upcoming Sports Events</h1>
-  
-  <!-- This Week -->
-  {{#if thisWeekEvents.length}}
-  <div class="event-section">
-    <div class="section-header">
-      <h2 class="section-title">This Week</h2>
-      <a href="/events/search?thisweek" class="more-btn">More →</a>
-    </div>
-    <div class="event-grid">
-      {{#each thisWeekEvents}}
-        {{> eventCard this}}
-      {{/each}}
-    </div>
-  </div>
-  {{/if}}
 
-  <!-- This Month -->
-  {{#if thisMonthEvents.length}}
-  <div class="event-section">
-    <div class="section-header">
-      <h2 class="section-title">This Month</h2>
-      <a href="/events/search?thismonth" thismonth" class="more-btn">More →</a>
-    </div>
-    <div class="event-grid">
-      {{#each thisMonthEvents}}
-        {{> eventCard this}}
-      {{/each}}
-    </div>
-  </div>
-  {{/if}}
+   <div class="search-filter-container">
 
-  <!-- Future Events -->
-  {{#if futureEvents.length}}
-  <div class="event-section">
-    <div class="section-header">
-      <h2 class="section-title">Future Events</h2>
-      <a href="/events/future" class="more-btn">More →</a>
+       <div class="filter_and_search">
+
+          <!-- Search Section -->
+          <form class="search-form">
+            <label for="search_query">Search Events:</label>
+            <div class="search-box">
+              <input type="text" id="search_query" name="search_query" placeholder="Enter event name...">
+              <button type="submit" class="search-btn">Search</button>
+            </div>
+          </form>
+
+          <!-- Filter Section -->
+          <form class="filter-form">
+            {{!-- <label for="filter-by">Filter by:</label> --}}
+            <select id="filter-by" name="filter_by">
+               <option value="sport">Sport Type</option>
+               <option value="location">Location</option>
+               <option value="time">Time of Day</option>
+               <option value="fee">Fee</option>
+               <option value="availability">Availability</option>
+            </select>
+            {{!-- <label for="filter-option">Options:</label> --}}
+            <select id="filter-option" name="filter_option">
+              <option value="">Choose Option</option>
+            </select>
+            <button type="submit" class="apply-btn">Apply Filters</button>
+          </form>
+       </div>
     </div>
-    <div class="event-grid">
-      {{#each futureEvents}}
-        {{> eventCard this}}
-      {{/each}}
-    </div>
-  </div>
+
+
+  {{#if searchResults}}
+        <div class="event-section">
+          <div class="section-header">
+            <h2 class="section-title">Search Results for {{search.filter_by}} {{search.filter_option}} {{search.search_query}}</h2>
+        </div>
+          {{#if searchResults.length}}
+            <div class="event-grid">
+              {{#each searchResults}}
+                {{> eventCard this}}
+              {{/each}}
+            </div>
+          {{else}}
+            <p>No events found matching your criteria.</p>
+          {{/if}}
+        </div>
+  {{else}}
+    <!-- Default layout without search -->
+    <!-- This Week -->
+    {{#if thisWeekEvents.length}}
+      <div class="event-section">
+        <div class="section-header">
+          <h2 class="section-title">This Week</h2>
+          <a href="/events/search?thisweek" class="more-btn">More →</a>
+        </div>
+        <div class="event-grid">
+          {{#each thisWeekEvents}}
+            {{> eventCard this}}
+          {{/each}}
+        </div>
+      </div>
+      {{/if}}
+      <!-- This Month -->
+      {{#if thisMonthEvents.length}}
+      <div class="event-section">
+        <div class="section-header">
+          <h2 class="section-title">This Month</h2>
+          <a href="/events/search?thismonth" thismonth" class="more-btn">More →</a>
+        </div>
+        <div class="event-grid">
+          {{#each thisMonthEvents}}
+            {{> eventCard this}}
+          {{/each}}
+        </div>
+      </div>
+      {{/if}}
+
+      <!-- Future Events -->
+      {{#if futureEvents.length}}
+      <div class="event-section">
+        <div class="section-header">
+          <h2 class="section-title">Future Events</h2>
+          <a href="/events/future" class="more-btn">More →</a>
+        </div>
+        <div class="event-grid">
+          {{#each futureEvents}}
+            {{> eventCard this}}
+          {{/each}}
+        </div>
+      </div>
+     {{/if}}
   {{/if}}
 </div>

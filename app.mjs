@@ -23,6 +23,7 @@ import {
   getFutureEvents,
   getThisWeekEvents,
   getThisMonthEvents,
+  getSearchResults,
 } from "./services.mjs";
 
 
@@ -80,15 +81,60 @@ app.get("/about", (req,res)=>{
 
 app.get("/events", async (req, res) => {
   try {
+    const search = req.query;
+
     const thisWeekEvents = await getThisWeekEvents();
     const thisMonthEvents = await getThisMonthEvents();
     const futureEvents = await getFutureEvents();
+    let searchResults = null;
+    
+    console.log("Search Object: ", search);
+
+    if (Object.keys(search).length > 0 && (search.filter_by || search.search_query)) {
+      let query = {};
+
+      // Search by event title
+      if (search.search_query) {
+        query.title = { $regex: search.search_query, $options: "i" };
+      }
+
+      // Filter by selected filter
+      if (search.filter_by && search.filter_option) {
+        switch (search.filter_by) {
+          case "sport":
+            query.sport = search.filter_option;
+            break;
+          case "location":
+            query.location = search.filter_option;
+            break;
+          case "time":
+            if (search.filter_option === "morning") query.time = { $gte: "06:00", $lt: "12:00" };
+            else if (search.filter_option === "afternoon") query.time = { $gte: "12:00", $lt: "18:00" };
+            else if (search.filter_option === "evening") query.time = { $gte: "18:00", $lt: "22:00" };
+            break;
+          case "fee":
+            query.fee = search.filter_option === "free" ? 0 : { $gt: 0 };
+            break;
+          case "availability":
+            if (search.filter_option === "available") {
+              query.$expr = { $lt: [{ $size: "$participants" }, "$slots"] };
+            } else if (search.filter_option === "full") {
+              query.$expr = { $eq: [{ $size: "$participants" }, "$slots"] };
+            }
+            break;
+        }
+      }
+
+      searchResults = await getSearchResults(query);
+    }
 
     res.render("events", {
       title: "Events",
       thisWeekEvents,
       thisMonthEvents,
       futureEvents,
+      searchResults,
+      search,
       user: req.session?.user || null
     });
 
