@@ -27,6 +27,7 @@ import {
   getSportsOptions,
   getOptionsFromEvents,
   getSportIdByName,
+  getEventById,
 } from "./services.mjs";
 
 
@@ -167,7 +168,9 @@ app.get("/events", async (req, res) => {
       console.log("Query: ", query);
 
       searchResults = await getSearchResults(query);
-    }
+    } 
+
+    console.log("This MonthEvents", thisMonthEvents);
 
     res.render("events", {
       title: "Events",
@@ -241,15 +244,54 @@ app.get("/events/filter-options/:field", async (req, res) => {
   }
 });
 
+app.get('/events/:id', async (req, res) => {
+  try {
+    const eventID = req.params.id;
 
-app.get('/events/:id/join', (req, res) => {
-  
-  res.render('comingSoon', { });
+    const event = await getEventById(eventID);
+
+    if (!event) {
+      return res.status(404).send('Event not found');
+    }
+
+    // Organizer initials
+    const ownerInitials = event.owner?.name?.firstName?.[0]?.toUpperCase() || '';
+
+    const maxDisplay = 5;
+    const displayedParticipants = (event.participants || []).slice(0, maxDisplay);
+    const hasMoreParticipants = (event.participants?.length || 0) > maxDisplay;
+    const remainingCount = (event.participants?.length || 0) - maxDisplay;
+
+    // User flags
+    const user = req.session.user;
+    const userId = user?._id?.toString();
+    const ownerId = event.owner?._id?.toString();
+
+    const isOwner = userId && ownerId && userId === ownerId;
+    const isParticipant = userId && event.participants.some(p => p._id.toString() === userId);
+    const isFull = (event.participants?.length || 0) >= event.slots;
+
+    res.render('eventDetails', {
+      event,
+      ownerInitials,
+      participants: displayedParticipants,
+      hasMoreParticipants,
+      remainingCount,
+      showParticipants: (event.participants?.length || 0) > 0,
+      user: user,
+      owner: isOwner,
+      isParticipant,
+      isFull
+    });
+  } catch (error) {
+    console.error('Error loading event:', error);
+    res.status(500).send('Server error');
+  }
 });
 
 
-app.get('/events/search', (req, res) => {
-  res.render('comingSoon');
+app.get('/events/:id/join', (req, res) => {
+  res.render('comingSoon', { });
 });
 
 
