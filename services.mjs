@@ -1,4 +1,4 @@
-import {Event} from './db.mjs'; 
+import {Event, Sport} from './db.mjs'; 
 
 const formatEvents = (events) => events.map(event => {
   const dateObj = new Date(event.date);
@@ -57,7 +57,33 @@ export const getFutureEvents = async () => {
 };
 
 
-export const getSearchResults = async(filter)  =>{
-  return await getThisMonthEvents();
+export const getSearchResults = async (filter) => {
+  try {
 
+    const results = await Event.find(filter)  
+      .lean()  // To allow modifying results
+      .exec();
+
+    console.log("Results: ", results);
+
+    return formatEvents(results);
+
+  } catch (err) {
+    console.error("Error fetching search results:", err);
+    return [];
+  }
+};
+
+export const getSportsOptions = async () =>{
+   const sports = await Sport.find();
+   const options = sports.map(sport => ({ value: sport._id, label: sport.name }));
+   return options;
 }
+
+export const getOptionsFromEvents = async (optionName) =>{
+   const optionsArray = await Event.distinct(optionName);
+   const options = optionsArray.map(option => ({ value: option, label: option }));
+   return options;
+}
+
+
