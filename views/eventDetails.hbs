@@ -1,33 +1,40 @@
 <div class="event-container">
-
-  <!-- Event Title -->
-  <h1 class="event-title">{{event.title}}</h1>
-
-  <!-- About Event / Description -->
-  {{#if event.description}}
-    <section class="event-about">
-      <p>{{event.description}}</p>
-    </section>
+  <!-- Event Image -->
+  {{#if event.image}}
+    <div class="event-image">
+      <img src="{{event.image}}" alt="{{event.title}}">
+    </div>
   {{/if}}
 
-  <!-- Event Details -->
-  <section class="event-details">
-    <h3>Event Details</h3>
-    <table class="event-details-table">
+  <!-- Event Table -->
+  <table class="event-table">
+    <thead>
       <tr>
-        <th>🏃 Sport</th>
+        <th colspan="2" class="event-title-header">{{event.title}}</th>
+      </tr>
+    </thead>
+    <tbody>
+      {{#if event.description}}
+        <tr>
+          <th>Description</th>
+          <td>{{event.description}}</td>
+        </tr>
+      {{/if}}
+
+      <tr>
+        <th>Sport</th>
         <td>{{event.sport.name}}</td>
       </tr>
       <tr>
-        <th>📍 Location</th>
+        <th>Location</th>
         <td>{{event.location}}</td>
       </tr>
       <tr>
-        <th>📅 Date & Time</th>
+        <th>Date & Time</th>
         <td>{{event.formattedDate}} at {{event.formattedTime}}</td>
       </tr>
       <tr>
-        <th>💰 Fee</th>
+        <th>Fee</th>
         <td>
           {{#if event.fee}}
             ${{event.fee}}
@@ -37,19 +44,19 @@
         </td>
       </tr>
       {{#if event.requirements}}
-      <tr>
-        <th>📝 Requirements</th>
-        <td>{{event.requirements}}</td>
-      </tr>
+        <tr>
+          <th>Requirements</th>
+          <td>{{event.requirements}}</td>
+        </tr>
       {{/if}}
       <tr>
-        <th>🎯 Slots</th>
+        <th>Slots</th>
         <td>{{event.participants.length}} / {{event.slots}} filled</td>
       </tr>
-    </table>
-  </section>
+    </tbody>
+  </table>
 
-  <!-- Registered Participants -->
+  <!-- Participants (if shown) -->
   {{#if showParticipants}}
     <section class="participants-section">
       <h3>Participants</h3>
@@ -63,7 +70,6 @@
             {{/if}}
           </div>
         {{/each}}
-
         {{#if hasMoreParticipants}}
           <div class="avatar more">+{{remainingCount}}</div>
         {{/if}}
@@ -87,24 +93,96 @@
   <section class="event-actions">
     {{#if user}}
       {{#if owner}}
-        <a href="/events/{{event._id}}/edit" class="btn">✏️ Edit</a>
+        <!-- Owner can edit or delete -->
+        <a href="/events/{{event._id}}/edit" class="btn">Edit</a>
         <form action="/events/{{event._id}}/delete" onsubmit="return confirm('Delete this event?')" style="display:inline;">
-          <button type="submit" class="btn btn-delete">🗑️ Delete</button>
+          <button type="submit" class="btn btn-delete">Delete</button>
         </form>
+
       {{else if isParticipant}}
-        <form action="/events/{{event._id}}/leave" >
+        <!-- User already joined, can leave -->
+        <form action="/events/{{event._id}}/leave" method="post">
           <button type="submit" class="btn">Leave Event</button>
         </form>
+
       {{else if isFull}}
+        <!-- Event is full -->
         <button class="btn" disabled>Event Full</button>
+
       {{else}}
-        <form action="/events/{{event._id}}/join" >
-          <button type="submit" class="btn">➕ Register</button>
-        </form>
+        <!-- Available for registration -->
+        <button class="btn join-btn" data-id="{{event._id}}" data-title="{{event.title}}">
+          Register
+        </button>
       {{/if}}
+
     {{else}}
+      <!-- Guest, not signed in -->
       <a href="/signin" class="btn">Sign in to Register</a>
     {{/if}}
   </section>
-
 </div>
+
+{{!-- Register Dialog  --}}
+<dialog id="modal-register" class="modal">
+
+  {{#if user}}
+    <div class="modal-content">
+      <button class="close-btn" id="close-register">&times;</button>
+      <h2 id="event-title" class="event-title">Register for Event</h2>
+
+      <form id="register-form">
+        <div class="form-group">
+          <label for="participant-name">Your Name:</label>
+          <input type="text" id="participant-name" name="participant_name"
+                 value="{{user.name.firstName}} {{user.name.secondName}}" readonly>
+        </div>
+
+        <div class="form-group">
+          <label for="participant-email">Email:</label>
+          <input type="email" id="participant-email" name="participant_email"
+                 value="{{user.email}}" readonly>
+        </div>
+
+        <input type="hidden" id="event-id" name="event_id" value="{{event._id}}">
+
+        {{!-- {{#if event.fee}}
+        <fieldset class="payment-section">
+          <legend>Payment Information</legend>
+          <div class="form-group">
+            <label for="card-number">Card Number:</label>
+            <input type="text" id="card-number" name="card_number" placeholder="xxxx xxxx xxxx xxxx" required>
+          </div>
+          <div class="form-group">
+            <label for="expiry-date">Expiry Date:</label>
+            <input type="text" id="expiry-date" name="expiry_date" placeholder="MM/YY" required>
+          </div>
+          <div class="form-group">
+            <label for="cvv">CVV:</label>
+            <input type="text" id="cvv" name="cvv" placeholder="123" required>
+          </div>
+        </fieldset>
+        {{/if}} --}}
+
+        <div class="modal-actions">
+          <button type="submit" class="btn btn-primary">Confirm Registration</button>
+          <button type="button" class="btn btn-secondary" id="cancel-register">Cancel</button>
+        </div>
+      </form>
+    </div>
+  {{else}}
+    <div class="modal-content">
+      <button class="close-btn" id="close-register">&times;</button>
+      <h2 class="modal-title">Sign In Required</h2>
+      <p>You must be signed in to register for events.</p>
+      <div class="modal-actions">
+        <a href="/signin" class="btn btn-primary">Sign In</a>
+        <button type="button" class="btn btn-secondary" id="cancel-register">Cancel</button>
+      </div>
+    </div>
+  {{/if}}
+
+</dialog>
+
+
+<script src="/events.js"></script>
