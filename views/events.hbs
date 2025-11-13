@@ -70,4 +70,66 @@
   </div>
 </div>
 
+{{!-- Register Dialog  --}}
+<dialog id="modal-register" class="modal">
+
+  {{#if user}}
+    <div class="modal-content">
+      <button class="close-btn" id="close-register">&times;</button>
+      <h2 id="event-title" class="event-title">Register for Event</h2>
+
+      <form id="register-form">
+        <div class="form-group">
+          <label for="participant-name">Your Name:</label>
+          <input type="text" id="participant-name" name="participant_name"
+                 value="{{user.name.firstName}} {{user.name.secondName}}" readonly>
+        </div>
+
+        <div class="form-group">
+          <label for="participant-email">Email:</label>
+          <input type="email" id="participant-email" name="participant_email"
+                 value="{{user.email}}" readonly>
+        </div>
+
+        <input type="hidden" id="event-id" name="event_id" value="{{event._id}}">
+
+        {{!-- {{#if event.fee}}
+        <fieldset class="payment-section">
+          <legend>Payment Information</legend>
+          <div class="form-group">
+            <label for="card-number">Card Number:</label>
+            <input type="text" id="card-number" name="card_number" placeholder="xxxx xxxx xxxx xxxx" required>
+          </div>
+          <div class="form-group">
+            <label for="expiry-date">Expiry Date:</label>
+            <input type="text" id="expiry-date" name="expiry_date" placeholder="MM/YY" required>
+          </div>
+          <div class="form-group">
+            <label for="cvv">CVV:</label>
+            <input type="text" id="cvv" name="cvv" placeholder="123" required>
+          </div>
+        </fieldset>
+        {{/if}} --}}
+
+        <div class="modal-actions">
+          <button type="submit" class="btn btn-primary">Confirm Registration</button>
+          <button type="button" class="btn btn-secondary" id="cancel-register">Cancel</button>
+        </div>
+      </form>
+    </div>
+  {{else}}
+    <div class="modal-content">
+      <button class="close-btn" id="close-register">&times;</button>
+      <h2 class="modal-title">Sign In Required</h2>
+      <p>You must be signed in to register for events.</p>
+      <div class="modal-actions">
+        <a href="/signin" class="btn btn-primary">Sign In</a>
+        <button type="button" class="btn btn-secondary" id="cancel-register">Cancel</button>
+      </div>
+    </div>
+  {{/if}}
+
+</dialog>
+
+
 <script src="events.js"></script>

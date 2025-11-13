@@ -273,6 +273,7 @@ app.get("/api/events/filter-options/:field", async (req, res) => {
 app.get('/events/:id', async (req, res) => {
   try {
     const eventID = req.params.id;
+    console.log('Event ID from params:', eventID);
 
     const event = await getEventById(eventID);
 

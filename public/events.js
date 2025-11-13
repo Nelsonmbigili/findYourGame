@@ -6,7 +6,51 @@ document.addEventListener('DOMContentLoaded', () => {
   const searchForm = document.getElementById("search-form");
   const filterForm = document.getElementById("filter-form");
   const eventsContainer = document.getElementById("events-content-container");
+  const registerModal = document.getElementById("modal-register");
+  const closeRegister = document.getElementById("close-register");
+  const cancelRegister = document.getElementById("cancel-register");
+
+  function openRegisterModal(eventId, eventTitle) {
+    registerModal.classList.add("open");
+    document.body.style.overflow = "hidden";
+
+    document.getElementById("event-id").value = eventId;
+    console.log("Event ID: ", eventId);
+
+    const modalTitle = document.getElementById("event-title");
+    if (modalTitle) {
+      modalTitle.textContent = `Register for ${eventTitle}`;
+    }
+  }
+
+  function closeRegisterModal() {
+    registerModal.classList.remove("open");
+    document.body.style.overflow = "";
+  }
+
+  if (registerModal && closeRegister && cancelRegister) {
+    closeRegister.addEventListener("click", closeRegisterModal);
+    cancelRegister.addEventListener("click", closeRegisterModal);
+
+    registerModal.addEventListener("click", (e) => {
+      if (e.target === registerModal) closeRegisterModal();
+    });
+  }
+
+
+  function attachJoinModalListeners() {
+    document.querySelectorAll(".join-btn").forEach(btn => {
+      btn.addEventListener("click", (e) => {
+        e.preventDefault();
+        const eventId = btn.dataset.id || "{{event._id}}";
+        const eventTitle = btn.dataset.title;
+        openRegisterModal(eventId, eventTitle);
+      });
+    });
+  }
   
+  attachJoinModalListeners();
+
   // Table and Pagination elements
   const tableBody = document.getElementById("events-table-body");
   const pageSizeSelect = document.getElementById("page-size-select");
@@ -85,7 +129,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path>
               </svg>
             </button>
-            <button class="table-action-btn join-btn" data-id="${event._id}" title="Join Event">
+            <button class="table-action-btn join-btn" data-id="${event._id}" data-title="${event.title}" title="Join Event">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <line x1="12" y1="5" x2="12" y2="19"></line>
                 <line x1="5" y1="12" x2="19" y2="12"></line>
@@ -96,6 +140,8 @@ document.addEventListener('DOMContentLoaded', () => {
     `).join('');
 
     tableBody.innerHTML = tableHtml;
+    // Join eventListeners
+    attachJoinModalListeners();
   };
 
  // Update Pagination 
