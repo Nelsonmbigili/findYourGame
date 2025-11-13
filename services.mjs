@@ -1,5 +1,4 @@
-import {Event, Sport} from './db.mjs'; 
-
+import {Event, Sport, User} from './db.mjs'; 
 
 const formatEvents = (events) => {
   if (!Array.isArray(events)) events = [events]; // handle single event
@@ -18,67 +17,13 @@ const formatEvents = (events) => {
   });
 };
 
-
-export const getThisWeekEvents = async () => {
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
-
-  const endOfWeek = new Date(today);
-  endOfWeek.setDate(endOfWeek.getDate() + 7);
-  endOfWeek.setHours(23, 59, 59, 999);
-
-  const events = await Event.find({
-    date: { $gte: today, $lte: endOfWeek }
-  }).sort({ date: 1 }).lean();
-
-  return formatEvents(events);
-};
-
-export const getThisMonthEvents = async () => {
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
-
-  const oneWeekFromToday = new Date(today);
-  oneWeekFromToday.setDate(oneWeekFromToday.getDate() + 7);
-
-  const endOfMonth = new Date(today.getFullYear(), today.getMonth() + 1, 0);
-  endOfMonth.setHours(23, 59, 59, 999);
-
-  const events = await Event.find({
-    date: { $gt: oneWeekFromToday, $lte: endOfMonth }
-  }).sort({ date: 1 }).lean();
-
-  return formatEvents(events);
-};
-
-export const getFutureEvents = async () => {
-  const today = new Date();
-  const endOfMonth = new Date(today.getFullYear(), today.getMonth() + 1, 0);
-  endOfMonth.setHours(23, 59, 59, 999);
-
-  const events = await Event.find({
-    date: { $gt: endOfMonth }
-  }).sort({ date: 1 }).lean();
-
-  return formatEvents(events);
-};
-
-
-export const getSearchResults = async (filter) => {
-  try {
-
-    const results = await Event.find(filter)  
-      .lean()  // To allow modifying results
-      .exec();
-
-    console.log("Results: ", results);
-
-    return formatEvents(results);
-
-  } catch (err) {
-    console.error("Error fetching search results:", err);
-    return [];
-  }
+export const getSearchResults = async (query, sort = { date: 1 }, skip = 0, limit = 10) => {
+  return await Event.find(query)
+    .populate('sport', 'name')
+    .sort(sort)
+    .skip(skip)
+    .limit(limit)
+    .lean();
 };
 
 export const getSportsOptions = async () =>{
@@ -108,3 +53,16 @@ export const getEventById = async (id) => {
 
   return formatEvents(event)[0];
 }
+
+export const getUserById = async (id) => {
+  const user = await User.findOne({ _id: id })
+    .select('-password -resetToken -resetTokenExpiry')
+    .lean();
+
+  return user;
+}
+
+export const getEventsCount = async (query = {}) => {
+
+  return await Event.countDocuments(query);
+};

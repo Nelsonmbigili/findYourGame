@@ -1,126 +1,73 @@
 <div class="events-page-container">
   <h1 class="events-page-title">Upcoming Sports Events</h1>
 
-   <div class="search-filter-container">
+  <div class="search-filter-container">
+    <div class="filter_and_search">
+      <form class="search-form" id="search-form">
+        <label for="search_query">Search Events:</label>
+        <div class="search-box">
+          <input type="text" id="search_query" name="search_query" placeholder="Enter event name...">
+          <button type="submit" class="search-btn">Search</button>
+        </div>
+      </form>
 
-       <div class="filter_and_search">
-
-          <!-- Search Section -->
-          <form class="search-form">
-            <label for="search_query">Search Events:</label>
-            <div class="search-box">
-              <input type="text" id="search_query" name="search_query" placeholder="Enter event name...">
-              <button type="submit" class="search-btn">Search</button>
-            </div>
-          </form>
-
-          <!-- Filter Section -->
-          <form method = "GET" action="events" class="filter-form">
-            {{!-- <label for="filter-by">Filter by:</label> --}}
-            <select id="filter-by" name="filter_by">
-               <option value="sport">Sport Type</option>
-               <option value="location">Location</option>
-               <option value="time">Time </option>
-               <option value="date">Date </option>
-               <option value="fee">Fee</option>
-               <option value="availability">Availability</option>
-            </select>
-            {{!-- <label for="filter-option">Options:</label> --}}
-            <select id="filter-option" name="filter_option">
-              <option value="">Choose Option</option>
-            </select>
-            <button type="submit" class="apply-btn">Apply Filters</button>
-          </form>
-       </div>
+      <form class="filter-form" id="filter-form">
+        <select id="filter-by" name="filter_by">
+          <option value="">Select Filter</option>
+          <option value="sport">Sport Type</option>
+          <option value="location">Location</option>
+          <option value="time">Time</option>
+          <option value="date">Date</option>
+          <option value="fee">Fee</option>
+          <option value="availability">Availability</option>
+        </select>
+        <select id="filter-option" name="filter_option">
+          <option value="">Choose Option</option>
+        </select>
+        <button type="submit" class="apply-btn">Apply Filters</button>
+      </form>
     </div>
+  </div>
 
+  <div id="events-content-container">
+    <div class="table-responsive">
+    <table class="events-table">
+      <thead>
+        <tr>
+          <th>Event</th>
+          <th>Sport</th>
+          <th>Location</th>
+          <th>Date</th>
+          <th>Time</th>
+          <th>Availability</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody id="events-table-body">
+        <tr>
+          <td colspan="7">Loading events...</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
 
-  {{#if searchResults}}
-        <div class="event-section">
-          <div class="section-header">
-            <h2 class="section-title">Search Results for {{search.filter_by}} => {{search.filter_option}} {{search.search_query}}</h2>
-        </div>
-          {{#if searchResults.length}}
-            <div class="event-grid">
-              {{#each searchResults}}
-                {{> eventCard this}}
-              {{/each}}
-            </div>
-          {{else}}
-            <p>No events found matching your criteria.</p>
-          {{/if}}
-        </div>
-  {{else}}
-    <!-- Default layout without search -->
-    <!-- This Week -->
-    {{#if thisWeekEvents.length}}
-      <div class="event-section">
-        <div class="section-header">
-          <h2 class="section-title">This Week</h2>
-          <a href="/events?filter_by=date&filter_option=thisWeek" class="more-btn">More →</a>
-        </div>
-        <div class="event-grid">
-          {{#each thisWeekEvents}}
-            {{> eventCard this}}
-          {{/each}}
-        </div>
+    <div class="pagination-controls">
+      <div class="page-size-selector">
+        <label for="page-size-select">Show:</label>
+        <select id="page-size-select">
+          <option value="10">10</option>
+          <option value="25">25</option>
+          <option value="50">50</option>
+        </select>
+        <span id="total-events-info"></span>
       </div>
-      {{/if}}
-      <!-- This Month -->
-      {{#if thisMonthEvents.length}}
-      <div class="event-section">
-        <div class="section-header">
-          <h2 class="section-title">This Month</h2>
-          <a href="/events?filter_by=date&filter_option=thisMonth" class="more-btn">More →</a>
-       </div>
-        <div class="event-grid">
-          {{#each thisMonthEvents}}
-            {{> eventCard this}}
-          {{/each}}
-        </div>
+      <div class="page-navigator">
+        <button id="prev-page-btn" disabled>&larr; Previous</button>
+        <span id="page-info">Page 1 of 1</span>
+        <button id="next-page-btn" disabled>Next &rarr;</button>
       </div>
-      {{/if}}
-
-      <!-- Future Events -->
-      {{#if futureEvents.length}}
-      <div class="event-section">
-        <div class="section-header">
-          <h2 class="section-title">Future Events</h2>
-          <a href="/events/future" class="more-btn">More →</a>
-        </div>
-        <div class="event-grid">
-          {{#each futureEvents}}
-            {{> eventCard this}}
-          {{/each}}
-        </div>
-      </div>
-     {{/if}}
-  {{/if}}
+    </div>
+  </div>
 </div>
 
-
-<script>
-  const filterBySelect = document.getElementById("filter-by");
-  const filterOptionSelect = document.getElementById("filter-option");
-
-  filterBySelect.addEventListener("change", async () => {
-    const field = filterBySelect.value;
-    filterOptionSelect.innerHTML = '<option value="">Choose Option</option>'; // reset
-
-    if (!field) return;
-
-    try {
-      const res = await fetch(`/events/filter-options/${field}`);
-      const options = await res.json();
-
-      options.forEach(opt => {
-        const optionEl = document.createElement("option");
-        optionEl.value = opt.value;
-        optionEl.textContent = opt.label;
-        filterOptionSelect.appendChild(optionEl);
-      });
-    } catch (err) {
-      console.error(err);
-    }
-  });
-</script>
+<script src="events.js"></script>
