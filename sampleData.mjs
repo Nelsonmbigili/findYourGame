@@ -3,6 +3,52 @@ import bcrypt from 'bcryptjs';
 import './config.mjs'; // Loads .env variables
 import { User, Sport, Event } from './db.mjs';
 
+// --- Data for Generation ---
+const firstNames = ['Alice', 'Bob', 'Clara', 'David', 'Eva', 'Finn', 'Grace', 'Henry', 'Ivy', 'Jack'];
+const lastNames = ['Johnson', 'Smith', 'Lee', 'Brown', 'Green', 'Davis', 'Miller', 'Wilson', 'Moore', 'Taylor'];
+const sportNames = ['Football', 'Basketball', 'Running', 'Table Tennis', 'Volleyball', 'Swimming', 'Cycling', 'Yoga'];
+const locations = [
+  'Central City Park', 'Riverside Pitch', 'Urban Court District', 'Community Center',
+  'Hilltop Trail', 'Main Street Gym', 'Lakeview Rec Area', 'Northside Sports Hall'
+];
+const eventTitles = [
+  'Morning', 'Afternoon', 'Evening', 'Weekly', 'Friendly', 'Competitive', 'Charity', 'Beginner'
+];
+
+// --- Helper Functions ---
+
+/**
+ * Picks random participants from the list of saved users.
+ * @param {Array<User>} allUsers - The array of all saved user documents.
+ * @param {number} num - The number of participants to pick.
+ * @param {string} [excludeId] - A user ID to exclude (e.g., the owner).
+ * @returns {Array<object>} An array of participant objects for the event schema.
+ */
+const getRandomParticipants = (allUsers, num, excludeId = null) => {
+  const possibleParticipants = excludeId
+    ? allUsers.filter(u => !u._id.equals(excludeId))
+    : [...allUsers];
+
+  const shuffled = possibleParticipants.sort(() => 0.5 - Math.random());
+  const selected = shuffled.slice(0, Math.min(num, shuffled.length)); // Ensure we don't take more than available
+
+  return selected.map(user => ({
+    _id: user._id,
+    name: user.name,
+    email: user.email,
+    image: null // Assuming no image for seeds
+  }));
+};
+
+/**
+ * Selects a random item from an array.
+ * @param {Array<T>} arr
+ * @returns {T}
+ */
+const getRandomItem = (arr) => arr[Math.floor(Math.random() * arr.length)];
+
+// --- Main Seeding Function ---
+
 const seedDatabase = async () => {
   try {
     // 1. Connect to MongoDB
@@ -15,88 +61,110 @@ const seedDatabase = async () => {
     await Event.deleteMany({});
     console.log("Cleared old data.");
 
-    // 3. Create sample users
+    // 3. Create 10 sample users
     const passwordHash = bcrypt.hashSync('password123', 10);
+    const usersToCreate = [];
+    for (let i = 0; i < 10; i++) {
+      const firstName = firstNames[i % firstNames.length];
+      const lastName = lastNames[i % lastNames.length];
+      usersToCreate.push({
+        name: { firstName, secondName: lastName },
+        username: `${firstName.toLowerCase()}${lastName.toLowerCase()}`,
+        email: `${firstName.toLowerCase()}@example.com`,
+        password: passwordHash,
+        createdEvents: [], // Will be populated later
+        joinedEvents: []   // Will be populated later
+      });
+    }
 
-    const users = [
-      { name: { firstName: 'Alice', secondName: 'Johnson' }, username: 'alicej', email: 'alice@example.com', password: passwordHash },
-      { name: { firstName: 'Bob', secondName: 'Smith' }, username: 'bobsmith', email: 'bob@example.com', password: passwordHash },
-      { name: { firstName: 'Clara', secondName: 'Lee' }, username: 'claralee', email: 'clara@example.com', password: passwordHash },
-      { name: { firstName: 'David', secondName: 'Brown' }, username: 'davidb', email: 'david@example.com', password: passwordHash },
-      { name: { firstName: 'Eva', secondName: 'Green' }, username: 'evag', email: 'eva@example.com', password: passwordHash }
-    ];
-
-    const savedUsers = await User.insertMany(users);
-    console.log("Created sample users.");
+    const savedUsers = await User.insertMany(usersToCreate);
+    console.log(`Created ${savedUsers.length} sample users.`);
 
     // 4. Create sample sports
-    const sports = [
-      { name: 'Football' },
-      { name: 'Basketball' },
-      { name: 'Running' },
-      { name: 'Table Tennis' },
-      { name: 'Volleyball' }
-    ];
+    const sportsToCreate = sportNames.map(name => ({ name }));
+    const savedSports = await Sport.insertMany(sportsToCreate);
+    console.log(`Created ${savedSports.length} sample sports.`);
 
-    const savedSports = await Sport.insertMany(sports);
-    console.log("Created sample sports.");
+    // 5. Generate 100 sample events and track relationships
+    console.log("Generating 100 events...");
+    const eventsToCreate = [];
+    
+    // Maps to track which events each user created or joined
+    // Key: userId (string), Value: Array of eventIds
+    const userCreatedMap = new Map(savedUsers.map(u => [u._id.toString(), []]));
+    const userJoinedMap = new Map(savedUsers.map(u => [u._id.toString(), []]));
 
-    // Helper to pick random users
-    const getRandomParticipants = (num) => {
-      const shuffled = [...savedUsers].sort(() => 0.5 - Math.random());
-      return shuffled.slice(0, num).map(user => ({
-        _id: user._id,
-        name: user.name,
-        email: user.email,
-        image: null
-      }));
-    };
+    for (let i = 0; i < 100; i++) {
+      const owner = getRandomItem(savedUsers);
+      const sport = getRandomItem(savedSports);
+      const title = `${getRandomItem(eventTitles)} ${sport.name} #${i + 1}`;
+      
+      // Get 1-8 participants, excluding the owner
+      const numParticipants = Math.floor(Math.random() * 8) + 1;
+      const participants = getRandomParticipants(savedUsers, numParticipants, owner._id);
+      
+      const eventDate = new Date(Date.now() + Math.random() * 30 * 24 * 60 * 60 * 1000); // Next 30 days
+      const slots = numParticipants + Math.floor(Math.random() * 10) + 5; // 5-15 more slots than participants
 
-    // 5. Create sample events
-    const events = [
-      {
-        title: "Sunday Morning Marathon",
-        description: "Join us for a refreshing 10k run through the city park. All levels welcome!",
-        sport: savedSports.find(s => s.name === 'Running')._id,
-        location: "Central City Park, Main Entrance",
-        date: new Date("2025-11-16T08:00:00Z"),
-        time: "08:00 AM",
-        fee: 15,
-        slots: 10,
-        requirements: "Running shoes, water bottle, and a positive attitude!",
-        owner: savedUsers[0]._id, // Alice
-        participants: getRandomParticipants(6)
-      },
-      {
-        title: "Saturday Morning Soccer",
-        description: "Casual soccer game for all skill levels.",
-        sport: savedSports.find(s => s.name === 'Football')._id,
-        location: "Riverside Pitch",
-        date: new Date("2025-11-23T08:30:00Z"),
-        time: "08:30 AM",
-        fee: 3,
-        slots: 14,
-        requirements: "Soccer shoes, shin guards.",
-        owner: savedUsers[1]._id, // Bob
-        participants: getRandomParticipants(5)
-      },
-      {
-        title: "3v3 Street Basketball",
-        description: "Competitive street basketball match.",
-        sport: savedSports.find(s => s.name === 'Basketball')._id,
-        location: "Urban Court District",
-        date: new Date("2025-11-23T17:00:00Z"),
-        time: "05:00 PM",
-        fee: 0,
-        slots: 6,
-        requirements: "Basketball shoes.",
-        owner: savedUsers[2]._id, // Clara
-        participants: getRandomParticipants(4)
+      // Create an event document *in memory* (new Event() adds an _id)
+      const eventDoc = new Event({
+        title: title,
+        description: `Join us for ${title}! A fun event at ${getRandomItem(locations)}.`,
+        sport: sport._id,
+        location: getRandomItem(locations),
+        date: eventDate,
+        time: `${Math.floor(Math.random() * 12) + 8}:00 ${Math.random() > 0.5 ? 'AM' : 'PM'}`,
+        fee: Math.floor(Math.random() * 50),
+        slots: slots,
+        requirements: "Bring water and appropriate gear.",
+        owner: owner._id,
+        participants: participants
+      });
+
+      eventsToCreate.push(eventDoc);
+
+      // Track the relationships to update users later
+      userCreatedMap.get(owner._id.toString()).push(eventDoc._id);
+      
+      for (const p of participants) {
+        userJoinedMap.get(p._id.toString()).push(eventDoc._id);
       }
-    ];
+    }
 
-    await Event.insertMany(events);
-    console.log("Seeded sample events with participants linked to users.");
+    // 6. Insert all events in one batch
+    await Event.insertMany(eventsToCreate);
+    console.log(`Seeded ${eventsToCreate.length} sample events.`);
+
+    // 7. Update all users with their created/joined events
+    console.log("Updating user references (createdEvents/joinedEvents)...");
+    const bulkUserOps = [];
+
+    for (const user of savedUsers) {
+      const userIdStr = user._id.toString();
+      const created = userCreatedMap.get(userIdStr);
+      const joined = userJoinedMap.get(userIdStr);
+
+      if (created.length > 0 || joined.length > 0) {
+        bulkUserOps.push({
+          updateOne: {
+            filter: { _id: user._id },
+            update: {
+              $set: { // Use $set to replace the empty arrays
+                createdEvents: created,
+                joinedEvents: joined
+              }
+            }
+          }
+        });
+      }
+    }
+
+    if (bulkUserOps.length > 0) {
+      await User.bulkWrite(bulkUserOps);
+      console.log(`Updated ${bulkUserOps.length} users with event relationships.`);
+    }
+
+    console.log("\n✅ Database seeding complete!");
 
   } catch (error) {
     console.error("Error seeding database:", error);

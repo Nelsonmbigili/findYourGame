@@ -20,14 +20,13 @@ import './passport-config.mjs';
 import { sendPasswordResetEmail } from "./email-config.mjs";
 import hbs from 'hbs';
 import { 
-  getFutureEvents,
-  getThisWeekEvents,
-  getThisMonthEvents,
   getSearchResults,
   getSportsOptions,
   getOptionsFromEvents,
   getSportIdByName,
   getEventById,
+  getUserById,
+  getEventsCount
 } from "./services.mjs";
 
 
@@ -37,9 +36,8 @@ const __dirname = path.dirname(__filename);
 
 app.set("view engine", "hbs");
 app.set('trust proxy', 1);
-app.use(express.static(path.join(__dirname, 'documentation')));
+app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.urlencoded({ extended: false }));
-hbs.registerPartials(path.join(__dirname, 'views/partials'));
 
 app.use(session({
   secret: process.env.SESSION_SECRET, 
@@ -80,123 +78,151 @@ app.get('/', (req, res) => {
 
 app.get("/about", (req,res)=>{
 	res.render("about",{});
-
 });
 
-app.get("/events", async (req, res) => {
+
+// Ajax API for fetching Events
+app.get("/api/events/search", async (req, res) => {
   try {
     const search = sanitize(req.query);
 
-    const thisWeekEvents = await getThisWeekEvents();
-    const thisMonthEvents = await getThisMonthEvents();
-    const futureEvents = await getFutureEvents();
-    let searchResults = null;
+    const page = parseInt(search.page) || 1;
+    const limit = parseInt(search.limit) || 10;
+    const skip = (page - 1) * limit;
     
-    console.log("Search Object: ", search);
+    const sort = { date: 1 }; 
 
-    if (Object.keys(search).length > 0 && (search.filter_by || search.search_query)) {
-      let query = {};
+    let query = {};
+    if (search.search_query) {
+      query.title = { $regex: search.search_query, $options: "i" };
+    }
 
-      // Search by event title
-      if (search.search_query) {
-        query.title = { $regex: search.search_query, $options: "i" };
+    if (search.filter_by && search.filter_option) {
+      switch (search.filter_by) {
+        case "sport":
+          const sportId = await getSportIdByName(search.filter_option);
+          if (sportId) query.sport = sportId;
+          else return res.json({ events: [], pagination: { totalPages: 0, currentPage: 1, totalEvents: 0 } });
+          break;
+        
+        case "location":
+          query.location = search.filter_option;
+          break;
+        
+        case "time":
+          if (search.filter_option === "morning") query.time = { $gte: "06:00", $lt: "12:00" };
+          else if (search.filter_option === "afternoon") query.time = { $gte: "12:00", $lt: "18:00" };
+          else if (search.filter_option === "evening") query.time = { $gte: "18:00", $lt: "22:00" };
+          break;
+        
+        case "date":
+          const today = new Date();
+          today.setHours(0, 0, 0, 0); 
+          const endOfToday = new Date(today);
+          endOfToday.setHours(23, 59, 59, 999);
+          const tomorrow = new Date(today);
+          tomorrow.setDate(tomorrow.getDate()+1);
+          const endOfTomorrow = new Date(tomorrow);
+          endOfTomorrow.setHours(23, 59, 59, 999);
+          const endOfWeek = new Date(today);
+          endOfWeek.setDate(endOfWeek.getDate() + 7);
+          endOfWeek.setHours(23, 59, 59, 999);
+          const endOfMonth = new Date(today.getFullYear(), today.getMonth() + 1, 0);
+          endOfMonth.setHours(23, 59, 59, 999);
+
+          if (search.filter_option === "today") query.date = { $gte: today, $lte: endOfToday }; 
+          else if (search.filter_option === "tomorrow") query.date = { $gte: today, $lte: endOfTomorrow };
+          else if (search.filter_option === "thisWeek") query.date = { $gte: today, $lte: endOfWeek }; 
+          else if (search.filter_option === "thisMonth") {
+            const oneWeekFromToday = new Date(today);
+            oneWeekFromToday.setDate(oneWeekFromToday.getDate() + 7);
+            query.date = { $gt: oneWeekFromToday, $lte: endOfMonth };
+          }
+          break;
+        
+        case "fee":
+          query.fee = search.filter_option === "free" ? 0 : { $gt: 0 };
+          break;
+        
+        case "availability":
+          if (search.filter_option === "available") {
+            query.$expr = { $lt: [{ $size: "$participants" }, "$slots"] };
+          } else if (search.filter_option === "full") {
+            query.$expr = { $eq: [{ $size: "$participants" }, "$slots"] };
+          }
+          break;
       }
+    }
 
-      // Filter by selected filter
-      if (search.filter_by && search.filter_option) {
-        switch (search.filter_by) {
-          case "sport":
-            const sportId = await getSportIdByName(search.filter_option);
-            if (sportId) query.sport = sportId;
-            else return [];
-            break;
-          case "location":
-            query.location = search.filter_option;
-            break;
-          case "time":
-            if (search.filter_option === "morning") query.time = { $gte: "06:00", $lt: "12:00" };
-            else if (search.filter_option === "afternoon") query.time = { $gte: "12:00", $lt: "18:00" };
-            else if (search.filter_option === "evening") query.time = { $gte: "18:00", $lt: "22:00" };
-            break;
-          case "date":
-            // Today logic
-            const today = new Date();
-            today.setHours(0, 0, 0, 0); 
-            const endOfToday = new Date(today);
-            endOfToday.setHours(23, 59, 59, 999);
-            // Next Day logic
-            const tomorrow = new Date(today);
-            tomorrow.setDate(tomorrow.getDate()+1);
-            tomorrow.setHours(0, 0, 0, 0); 
-            const endOfTomorrow = new Date(tomorrow);
-            endOfTomorrow.setHours(23, 59, 59, 999);
+    console.log("API Query: ", query);
 
-            // Next Week Logic
-            const endOfWeek = new Date(today);
-            endOfWeek.setDate(endOfWeek.getDate() + 7);
-            endOfWeek.setHours(23, 59, 59, 999);
-            const endOfMonth = new Date(today.getFullYear(), today.getMonth() + 1, 0);
-            endOfMonth.setHours(23, 59, 59, 999);
+    // Get Results from Database
+    const searchResults = await  getSearchResults(query, sort, skip, limit);
 
-            if (search.filter_option === "today") {
-            query.date = { $gte: today, $lte: endOfToday };
-            } 
-            else if (search.filter_option === "tomorrow") {
-            query.date = { $gte: today, $lte: endOfTomorrow };
-            }
-            else if (search.filter_option === "thisWeek") {
-            query.date = { $gte: today, $lte: endOfWeek };
-            } 
-            else if (search.filter_option === "thisMonth") {
-              const oneWeekFromToday = new Date(today);
-              oneWeekFromToday.setDate(oneWeekFromToday.getDate() + 7);
-              query.date = { $gt: oneWeekFromToday, $lte: endOfMonth };
-            }
-            break;
-          case "fee":
-            query.fee = search.filter_option === "free" ? 0 : { $gt: 0 };
-            break;
-          case "availability":
-            if (search.filter_option === "available") {
-              query.$expr = { $lt: [{ $size: "$participants" }, "$slots"] };
-            } else if (search.filter_option === "full") {
-              query.$expr = { $eq: [{ $size: "$participants" }, "$slots"] };
-            }
-            break;
-        }
+    const totalEvents = await  getEventsCount(query);
+
+    const totalPages = Math.ceil(totalEvents / limit);
+
+    const formattedResults = searchResults.map(event => {
+
+        const eventDate = new Date(event.date);
+        const formattedDate = eventDate.toString() === "Invalid Date"
+          ? "No Date"
+          : eventDate.toLocaleDateString('en-US', {
+              month: 'short',
+              day: 'numeric',
+            });
+        
+        const spotsLeft = (event.slots || 0) - (event.participants?.length || 0);
+        const slotsRemainingText = spotsLeft > 0 ? `${spotsLeft} slots` : "Full";
+
+        return {
+            _id: event._id,
+            title: event.title,
+            sport: event.sport, 
+            location: event.location,
+            formattedDate: formattedDate,
+            formattedTime: event.time || "No Time",
+            slotsRemainingText: slotsRemainingText
+        };
+    });
+    
+    res.json({
+      events: formattedResults,
+      pagination: {
+        currentPage: page,
+        totalPages: totalPages,
+        totalEvents: totalEvents,
+        limit: limit
       }
-      console.log("Query: ", query);
+    });
 
-      searchResults = await getSearchResults(query);
-    } 
+  } catch (error) {
+    console.error("API Search Error:", error);
+    res.status(500).json({ error: "Server error while searching" });
+  }
+});
 
-    console.log("This MonthEvents", thisMonthEvents);
 
+app.get("/events", async (req, res) => {
+  try {
     res.render("events", {
       title: "Events",
-      thisWeekEvents,
-      thisMonthEvents,
-      futureEvents,
-      searchResults,
-      search,
       user: req.session?.user || null
     });
 
   } catch (error) {
-    console.error("Error fetching events:", error);
-    res.status(500).render("events", {
-      title: "Events",
-      thisWeekEvents: [],
-      thisMonthEvents: [],
-      futureEvents: [],
-      error: "Unable to load events at this time",
+    console.error("Error rendering events page:", error);
+    res.status(500).render("error", { 
+      message: "Unable to load events page",
       user: req.session?.user || null
     });
   }
 });
 
-// Filter Options 
-app.get("/events/filter-options/:field", async (req, res) => {
+
+// AJAX for populating filter options 
+app.get("/api/events/filter-options/:field", async (req, res) => {
   const { field } = req.params;
   try {
     let options = [];
@@ -295,8 +321,42 @@ app.get('/events/:id/join', (req, res) => {
 });
 
 
-app.get("/dashboard", (req, res) => {
-  const user = req.session.user;
+app.get("/dashboard", async (req, res) => {
+  const userID = req.session.user.id
+  const user = await getUserById(userID);
+  console.log("User Object: ", user);
+  res.render("dashboard", {
+    title: "Dashboard",
+    user
+  });
+});
+
+
+app.get("/dashboard/myevents", async (req, res) => {
+  const userID = req.session.user.id
+  const user = await getUserById(userID);
+  console.log("User Object: ", user);
+  res.render("dashboard", {
+    title: "Dashboard",
+    user
+  });
+});
+
+
+app.get("/dashboard/create-event", async (req, res) => {
+  const userID = req.session.user.id
+  const user = await getUserById(userID);
+  console.log("User Object: ", user);
+  res.render("create", {
+    title: "create",
+    user
+  });
+});
+
+
+app.get("/dashboard/settings", async (req, res) => {
+  const userID = req.session.user.id
+  const user = await getUserById(userID);
   console.log("User Object: ", user);
   res.render("dashboard", {
     title: "Dashboard",

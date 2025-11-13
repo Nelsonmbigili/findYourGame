@@ -1,57 +1,51 @@
 <div class="dashboard-container">
+  <!-- Sidebar Navigation -->
+    <nav class="dashboard-nav">
+      <a href="/dashboard" class="dashboard-nav-item {{#if isOverview}}active{{/if}}">
+        <span>Overview</span>
+      </a>
 
-  <em>More features Coming.....!</em>
+      <a href="/dashboard/myevents" class="dashboard-nav-item {{#if isJoinedEvents}}active{{/if}}">
+        <span>My Events</span>
+      </a>
 
+      <a href="/dashboard/create-event" class="dashboard-nav-item {{#if isCreateEvent}}active{{/if}}">
+        <span>Create</span>
+      </a>
 
-  <h1 class="dashboard-title">Welcome, {{user.name.firstName}} {{user.name.secondName}}</h1>
+      <a href="/dashboard/settings" class="dashboard-nav-item {{#if isSettings}}active{{/if}}">
+        <span>Settings</span>
+      </a>
+    </nav>
 
+  <!-- Main Dashboard Section -->
+    <div class="card">
+      <div class="profile-top">
+        <h2>{{user.name.firstName}} {{user.name.secondName}}</h2>
+        <img class="profile-picture" src="/user.png" alt="Profile Picture">
+      </div>
+       
+        <form>
+            <label for="name">Name</label>
+            <input type="text" id="name" name="name" value="{{user.name.firstName}} {{user.name.secondName}}" readonly>
 
-  <!-- User Details Card -->
-  <div class="user-card">
-    <div class="user-field">
-      <label>Name</label>
-      <p>{{user.name.firstName}} {{user.name.secondName}}</p>
+            <label for="email">Email</label>
+            <input type="email" id="email" name="email" value="{{user.email}}" readonly>
+
+            <label for="phone">Phone</label>
+            <input type="tel" id="phone" name="phone" value="{{user.email}}" readonly>
+
+            <label for="about">About</label>
+            <textarea id="about" name="about" readonly>{{user.about}}</textarea>
+
+            <label for="gallery">Gallery</label>
+            <textarea id="gallery" name="gallery" readonly>My Images</textarea>
+            <div class="profile-top">
+              <button class="btn" type="button">Invite Friends</button>
+              <button class="btn" type="button">Share Profile</button>
+            </div>
+            
+        </form>
     </div>
-
-    <div class="user-field">
-      <label>Email</label>
-      <p>{{user.email}}</p>
-    </div>
-
-    <div class="user-field">
-      <label>Phone</label>
-      <p>{{#if user.phone}}{{user.phone}}{{else}}Not provided{{/if}}</p>
-    </div>
-
-    <div class="user-field">
-      <label>About</label>
-      <p>{{#if user.about}}{{user.about}}{{else}}Tell us about yourself...{{/if}}</p>
-    </div>
-
-    <div class="user-field">
-      <label>Created Events</label>
-      {{#if user.createdEvents.length}}
-        <ul>
-          {{#each user.createdEvents}}
-            <li>{{this.title}} - {{this.formattedDate}}</li>
-          {{/each}}
-        </ul>
-      {{else}}
-        <p>No events created yet.</p>
-      {{/if}}
-    </div>
-
-    <div class="user-field">
-      <label>Joined Events</label>
-      {{#if user.joinedEvents.length}}
-        <ul>
-          {{#each user.joinedEvents}}
-            <li>{{this.title}} - {{this.formattedDate}}</li>
-          {{/each}}
-        </ul>
-      {{else}}
-        <p>No events joined yet.</p>
-      {{/if}}
-    </div>
-  </div>
+  
 </div>
