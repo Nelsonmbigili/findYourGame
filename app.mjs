@@ -27,7 +27,8 @@ import {
   getEventById,
   getUserById,
   getEventsCount,
-  joinEvent
+  joinEvent,
+  getMyEvents
 } from "./services.mjs";
 
 
@@ -222,7 +223,6 @@ app.get("/events", async (req, res) => {
   }
 });
 
-
 // AJAX for populating filter options 
 app.get("/api/events/filter-options/:field", async (req, res) => {
   const { field } = req.params;
@@ -359,6 +359,67 @@ app.get("/dashboard", async (req, res) => {
     title: "Dashboard",
     user
   });
+});
+
+
+// AJAX for fetching User Events
+app.get("/api/users/myevents", async (req, res) => {
+  try {
+    if (!req.session.user || !req.session.user.id) {
+      return res.status(401).json({ error: "User not authenticated" });
+    }
+
+    const userId = req.session.user.id;
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 10;
+    const skip = (page - 1) * limit;
+
+    const { events, totalEvents } = await getMyEvents(userId, skip, limit);
+    
+    const totalPages = Math.ceil(totalEvents / limit);
+    
+    const formattedResults = events.map(event => {
+      const eventDate = new Date(event.date);
+      const formattedDate = eventDate.toString() === "Invalid Date"
+        ? "No Date"
+        : eventDate.toLocaleDateString('en-US', {
+            month: 'short',
+            day: 'numeric',
+          });
+      
+      const spotsLeft = (event.slots || 0) - (event.participants?.length || 0);
+      const slotsRemainingText = spotsLeft > 0 ? `${spotsLeft} slots` : "Full";
+
+      const isOwner = event.owner.toString() === userId.toString();
+      const isJoined = !isOwner && (event.participants || []).some(p => p._id.toString() === userId.toString());
+
+      return {
+        _id: event._id,
+        title: event.title,
+        sport: event.sport,
+        location: event.location,
+        formattedDate: formattedDate,
+        formattedTime: event.time || "No Time",
+        slotsRemainingText: slotsRemainingText,
+        isOwner: isOwner,
+        isJoined: isJoined
+      };
+    });
+
+    res.json({
+      events: formattedResults,
+      pagination: {
+        currentPage: page,
+        totalPages: totalPages,
+        totalEvents: totalEvents,
+        limit: limit
+      }
+    });
+
+  } catch (error) {
+    console.error("API MyEvents Error:", error);
+    res.status(500).json({ error: "Server error while fetching user events" });
+  }
 });
 
 

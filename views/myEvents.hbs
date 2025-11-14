@@ -1,0 +1,117 @@
+<div class="events-page-container">
+  <h1 class="events-page-title">My Events</h1>
+  
+  <p>This page shows all the events you have created or joined.</p>
+
+  <div id="events-content-container">
+    <div class="table-responsive">
+      <table class="events-table">
+        <thead>
+          <tr>
+            <th>Event</th>
+            <th>Sport</th>
+            <th>Location</th>
+            <th>Date</th>
+            <th>Time</th>
+            <th>Availability</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody id="events-table-body">
+          <tr>
+            <td colspan="7">Loading events...</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  
+    <div class="pagination-controls">
+      <div class="page-size-selector">
+        <label for="page-size-select">Show:</label>
+        <select id="page-size-select">
+          <option value="10">10</option>
+          <option value="25">25</option>
+          <option value="50">50</option>
+        </select>
+        <span id="total-events-info"></span>
+      </div>
+      <div class="page-navigator">
+        <button id="prev-page-btn" disabled>&larr; Previous</button>
+        <span id="page-info">Page 1 of 1</span>
+        <button id="next-page-btn" disabled>Next &rarr;</button>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<dialog id="modal-leave" class="modal">
+
+  {{#if user}}
+    <div class="modal-content">
+      <button class="close-btn" id="close-leave">&times;</button>
+      <h2 id="event-title-leave" class="event-title">Leave Event?</h2>
+
+      <form id="leave-form">
+        <div id="modal-message-leave" class="modal-message"></div>
+        
+        <p>Are you sure you want to leave this event?</p>
+
+        <input type="hidden" id="event-id-leave" name="event_id" value="">
+
+        <div class="modal-actions">
+          <button type="submit" class="btn btn-danger" id="confirm-leave-btn">Confirm Leave</button>
+          <button type="button" class="btn btn-secondary" id="cancel-leave">Cancel</button>
+        </div>
+      </form>
+    </div>
+  {{else}}
+    <div class="modal-content">
+      <button class="close-btn" id="close-leave">&times;</button>
+      <h2 class="modal-title">Sign In Required</h2>
+      <p>You must be signed in to manage your events.</p>
+      <div class="modal-actions">
+        <a href="/signin" class="btn btn-primary">Sign In</a>
+        <button type="button" class="btn btn-secondary" id="cancel-leave">Cancel</button>
+      </div>
+    </div>
+  {{/if}}
+
+</dialog>
+
+<dialog id="modal-delete" class="modal">
+
+  {{#if user}}
+    <div class="modal-content">
+      <button class="close-btn" id="close-delete">&times;</button>
+      <h2 id="event-title-delete" class="event-title">Delete Event?</h2>
+
+      <form id="delete-form">
+        <div id="modal-message-delete" class="modal-message"></div>
+        
+        <p>Are you sure you want to permanently delete this event? This cannot be undone.</p>
+
+        <input type="hidden" id="event-id-delete" name="event_id" value="">
+
+        <div class="modal-actions">
+          <button type="submit" class="btn btn-danger" id="confirm-delete-btn">Confirm Delete</button>
+          <button type="button" class="btn btn-secondary" id="cancel-delete">Cancel</button>
+        </div>
+      </form>
+    </div>
+  {{else}}
+    <div class="modal-content">
+      <button class="close-btn" id="close-delete">&times;</button>
+      <h2 class="modal-title">Sign In Required</h2>
+      <p>You must be signed in to manage your events.</p>
+      <div class="modal-actions">
+        <a href="/signin" class="btn btn-primary">Sign In</a>
+        <button type="button" class="btn btn-secondary" id="cancel-delete">Cancel</button>
+      </div>
+    </div>
+  {{/if}}
+
+</dialog>
+
+
+<script src="/myEvents.js"></script>
