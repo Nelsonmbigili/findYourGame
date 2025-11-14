@@ -18,7 +18,6 @@ import session from "express-session";
 import passport from 'passport';
 import './passport-config.mjs';
 import { sendPasswordResetEmail } from "./email-config.mjs";
-import hbs from 'hbs';
 import { 
   getSearchResults,
   getSportsOptions,
@@ -51,7 +50,7 @@ app.use(session({
   cookie: { httpOnly: true, secure: process.env.NODE_ENV === 'production'}
 }));
 
-const protectedPaths = ['/dashboard'];
+const protectedPaths = ['/dashboard',"/dashboard/myevents", "/dashboard/settings"];
 const outOnlyPaths = ['/signin','/signup','/forgotpassword'];
 
 app.use((req, res, next) => {
@@ -97,30 +96,31 @@ app.get("/api/events/search", async (req, res) => {
     
     const sort = { date: 1 }; 
 
-    let query = {};
+    const query = {};
     if (search.search_query) {
       query.title = { $regex: search.search_query, $options: "i" };
     }
 
     if (search.filter_by && search.filter_option) {
       switch (search.filter_by) {
-        case "sport":
+        case "sport":{
           const sportId = await getSportIdByName(search.filter_option);
-          if (sportId) query.sport = sportId;
-          else return res.json({ events: [], pagination: { totalPages: 0, currentPage: 1, totalEvents: 0 } });
+          if (sportId) {query.sport = sportId;}
+          else {return res.json({ events: [], pagination: { totalPages: 0, currentPage: 1, totalEvents: 0 } });}
           break;
-        
-        case "location":
+        }
+        case "location":{
           query.location = search.filter_option;
           break;
-        
-        case "time":
-          if (search.filter_option === "morning") query.time = { $gte: "06:00", $lt: "12:00" };
-          else if (search.filter_option === "afternoon") query.time = { $gte: "12:00", $lt: "18:00" };
-          else if (search.filter_option === "evening") query.time = { $gte: "18:00", $lt: "22:00" };
+        }
+
+        case "time":{
+          if (search.filter_option === "morning") {query.time = { $gte: "06:00", $lt: "12:00" };}
+          else if (search.filter_option === "afternoon") {query.time = { $gte: "12:00", $lt: "18:00" };}
+          else if (search.filter_option === "evening") {query.time = { $gte: "18:00", $lt: "22:00" };}
           break;
-        
-        case "date":
+        }
+        case "date":{
           const today = new Date();
           today.setHours(0, 0, 0, 0); 
           const endOfToday = new Date(today);
@@ -135,36 +135,38 @@ app.get("/api/events/search", async (req, res) => {
           const endOfMonth = new Date(today.getFullYear(), today.getMonth() + 1, 0);
           endOfMonth.setHours(23, 59, 59, 999);
 
-          if (search.filter_option === "today") query.date = { $gte: today, $lte: endOfToday }; 
-          else if (search.filter_option === "tomorrow") query.date = { $gte: today, $lte: endOfTomorrow };
-          else if (search.filter_option === "thisWeek") query.date = { $gte: today, $lte: endOfWeek }; 
+          if (search.filter_option === "today") {query.date = { $gte: today, $lte: endOfToday };} 
+          else if (search.filter_option === "tomorrow") {query.date = { $gte: today, $lte: endOfTomorrow };}
+          else if (search.filter_option === "thisWeek") {query.date = { $gte: today, $lte: endOfWeek };} 
           else if (search.filter_option === "thisMonth") {
             const oneWeekFromToday = new Date(today);
             oneWeekFromToday.setDate(oneWeekFromToday.getDate() + 7);
             query.date = { $gt: oneWeekFromToday, $lte: endOfMonth };
           }
           break;
+        }
         
-        case "fee":
+        case "fee":{
           query.fee = search.filter_option === "free" ? 0 : { $gt: 0 };
           break;
-        
-        case "availability":
+        }
+        case "availability":{
           if (search.filter_option === "available") {
             query.$expr = { $lt: [{ $size: "$participants" }, "$slots"] };
           } else if (search.filter_option === "full") {
             query.$expr = { $eq: [{ $size: "$participants" }, "$slots"] };
           }
           break;
+        }
       }
     }
 
     console.log("API Query: ", query);
 
     // Get Results from Database
-    const searchResults = await  getSearchResults(query, sort, skip, limit);
+    const searchResults = await getSearchResults(query, sort, skip, limit);
 
-    const totalEvents = await  getEventsCount(query);
+    const totalEvents = await getEventsCount(query);
 
     const totalPages = Math.ceil(totalEvents / limit);
 
@@ -233,7 +235,7 @@ app.get("/api/events/filter-options/:field", async (req, res) => {
 
     switch(field) {
       case "sport":
-        options =  await getSportsOptions();
+        options = await getSportsOptions();
         break;
       case "location":
         options = await getOptionsFromEvents("location");
@@ -354,7 +356,7 @@ app.post('/events/join', async (req, res) => {
 
 
 app.get("/dashboard", async (req, res) => {
-  const userID = req.session.user.id
+  const userID = req.session.user.id;
   const user = await getUserById(userID);
   console.log("User Object: ", user);
   res.render("dashboard", {
@@ -522,7 +524,7 @@ app.post('/api/events/delete', async (req, res) => {
 
 
 app.get("/dashboard/settings", async (req, res) => {
-  const userID = req.session.user.id
+  const userID = req.session.user.id;
   const user = await getUserById(userID);
   console.log("User Object: ", user);
   res.render("dashboard", {
@@ -731,6 +733,15 @@ app.post("/resetpassword/:token", async (req, res) => {
     });
   }
 });
+
+// 404 Middleware
+app.use((req, res, next) => {
+  res.status(404).render('404', { 
+    title: '404 - Page Not Found',
+    user: req.session.user || null 
+  });
+});
+
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {

@@ -1,7 +1,7 @@
 import {Event, Sport, User} from './db.mjs'; 
 
 const formatEvents = (events) => {
-  if (!Array.isArray(events)) events = [events]; // handle single event
+  if (!Array.isArray(events)) {events = [events];} // handle single event
   
   return events.map(event => {
     const dateObj = new Date(event.date);
@@ -31,13 +31,13 @@ export const getSportsOptions = async () =>{
                     .lean();
    const options = sports.map(sport => ({ value: sport.name, label: sport.name }));
    return options;
-}
+};
 
 export const getOptionsFromEvents = async (optionName) =>{
    const optionsArray = await Event.distinct(optionName);
    const options = optionsArray.map(option => ({ value: option, label: option }));
    return options;
-}
+};
 
 export const getSportIdByName = async (sportName) => {
   const sport = await Sport.findOne({ name: sportName }).lean();
@@ -52,7 +52,7 @@ export const getEventById = async (id) => {
     .lean();
 
   return formatEvents(event)[0];
-}
+};
 
 export const getUserById = async (id) => {
   const user = await User.findOne({ _id: id })
@@ -60,7 +60,7 @@ export const getUserById = async (id) => {
     .lean();
 
   return user;
-}
+};
 
 export const getEventsCount = async (query = {}) => {
 
@@ -74,7 +74,7 @@ export async function joinEvent(eventId, participantData) {
     {
       _id: eventId,
       'participants._id': { $ne: participantData._id }, 
-      $expr: { $lt: [ { $size: "$participants" }, "$slots" ] } 
+      $expr: { $lt: [{ $size: "$participants" }, "$slots"] } 
     },
     {
       $push: { participants: participantData } 

@@ -26,7 +26,7 @@ const userSchema = new mongoose.Schema({
   resetToken: { type: String }, // Password reset token
   resetTokenExpiry: { type: Date },
   createdEvents: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Event' }], // Arr of Reference to obj 
-  joinedEvents: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Event' }],  // Arr of Reference to obj 
+  joinedEvents: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Event' }], // Arr of Reference to obj 
   createdAt: { type: Date, default: Date.now }
 });
 
@@ -50,7 +50,7 @@ const eventSchema = new mongoose.Schema({
     },
     email: { type: String, required: true },
     image: { type: String, default: null }
-  }],                                                                    // Arr of Reference to obj
+  }], // Arr of Reference to obj
   createdAt: { type: Date, default: Date.now }
 });
 

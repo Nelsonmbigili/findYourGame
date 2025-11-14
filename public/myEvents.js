@@ -67,7 +67,7 @@ document.addEventListener('DOMContentLoaded', () => {
     closeLeaveBtn.addEventListener("click", closeLeaveModal);
     cancelLeaveBtn.addEventListener("click", closeLeaveModal);
     leaveModal.addEventListener("click", (e) => {
-      if (e.target === leaveModal) closeLeaveModal();
+      if (e.target === leaveModal) {closeLeaveModal();}
     });
   }
 
@@ -97,17 +97,17 @@ document.addEventListener('DOMContentLoaded', () => {
     closeDeleteBtn.addEventListener("click", closeDeleteModal);
     cancelDeleteBtn.addEventListener("click", closeDeleteModal);
     deleteModal.addEventListener("click", (e) => {
-      if (e.target === deleteModal) closeDeleteModal();
+      if (e.target === deleteModal) {closeDeleteModal();}
     });
   }
 
   // Populate Sports Options
   async function populateSportsDropdown() {
-    if (sportsOptions) return; 
+    if (sportsOptions) {return;} 
 
     try {
       const res = await fetch('/api/events/filter-options/sport');
-      if (!res.ok) throw new Error('Failed to fetch sports');
+      if (!res.ok) {throw new Error('Failed to fetch sports');}
       const options = await res.json();
       sportsOptions = options; 
 
@@ -149,7 +149,7 @@ document.addEventListener('DOMContentLoaded', () => {
     closeCreateBtn.addEventListener("click", closeCreateModal);
     cancelCreateBtn.addEventListener("click", closeCreateModal);
     createModal.addEventListener("click", (e) => {
-      if (e.target === createModal) closeCreateModal();
+      if (e.target === createModal) {closeCreateModal();}
     });
   }
 
@@ -386,7 +386,7 @@ document.addEventListener('DOMContentLoaded', () => {
          tableBody.innerHTML = '<tr><td colspan="7">You must be logged in to see your events.</td></tr>';
          return;
       }
-      if (!res.ok) throw new Error('Network response was not ok');
+      if (!res.ok) {throw new Error('Network response was not ok');}
 
       const { events, pagination } = await res.json();
       state = { ...state, ...pagination };
