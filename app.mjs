@@ -26,7 +26,8 @@ import {
   getSportIdByName,
   getEventById,
   getUserById,
-  getEventsCount
+  getEventsCount,
+  joinEvent
 } from "./services.mjs";
 
 
@@ -38,6 +39,7 @@ app.set("view engine", "hbs");
 app.set('trust proxy', 1);
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.urlencoded({ extended: false }));
+app.use(express.json());
 
 app.use(session({
   secret: process.env.SESSION_SECRET, 
@@ -317,8 +319,35 @@ app.get('/events/:id', async (req, res) => {
 });
 
 
-app.get('/events/:id/join', (req, res) => {
-  res.render('comingSoon', { });
+app.post('/events/join', async (req, res) => {
+  try {
+    const { eventId } = req.body;
+    const user = req.session.user; 
+
+    if (!user) {
+      return res.status(401).send('You must be signed in to join an event.');
+    }
+    
+    const participantData = {
+      _id: user.id,
+      name: user.name, 
+      email: user.email
+    };
+
+    await joinEvent(eventId, participantData);
+
+    return res.status(200).send('Successfully registered for the event.');
+  } catch (err) {
+    console.error('Error joining event:', err);
+    
+    if (err.message === 'Event not found.' || 
+        err.message === 'Event is already full.' || 
+        err.message === 'You have already joined this event.') {
+      return res.status(400).send(err.message);
+    }
+    
+    res.status(500).send('Server error.');
+  }
 });
 
 
