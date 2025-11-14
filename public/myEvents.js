@@ -17,6 +17,16 @@ document.addEventListener('DOMContentLoaded', () => {
   const modalTitleDelete = document.getElementById("event-title-delete");
   const eventIdInputDelete = document.getElementById("event-id-delete");
 
+  const createModal = document.getElementById("modal-create");
+  const openCreateModalBtn = document.getElementById("open-create-modal-btn");
+  const closeCreateBtn = document.getElementById("close-create");
+  const cancelCreateBtn = document.getElementById("cancel-create");
+  const createForm = document.getElementById('create-form');
+  const modalMessageCreate = document.getElementById('modal-message-create');
+  const confirmCreateBtn = document.getElementById('confirm-create-btn');
+  const sportSelectCreate = document.getElementById('create-sport');
+  let sportsOptions = null; 
+
   const tableBody = document.getElementById("events-table-body");
   const pageSizeSelect = document.getElementById("page-size-select");
   const totalEventsInfo = document.getElementById("total-events-info");
@@ -88,6 +98,58 @@ document.addEventListener('DOMContentLoaded', () => {
     cancelDeleteBtn.addEventListener("click", closeDeleteModal);
     deleteModal.addEventListener("click", (e) => {
       if (e.target === deleteModal) closeDeleteModal();
+    });
+  }
+
+  // Populate Sports Options
+  async function populateSportsDropdown() {
+    if (sportsOptions) return; 
+
+    try {
+      const res = await fetch('/api/events/filter-options/sport');
+      if (!res.ok) throw new Error('Failed to fetch sports');
+      const options = await res.json();
+      sportsOptions = options; 
+
+      sportSelectCreate.innerHTML = '<option value="">Select a Sport</option>';
+      options.forEach(opt => {
+        const optionEl = document.createElement("option");
+        optionEl.value = opt.value; 
+        optionEl.textContent = opt.label; 
+        sportSelectCreate.appendChild(optionEl);
+      });
+    } catch (err) {
+      console.error(err);
+      sportSelectCreate.innerHTML = '<option value="">Could not load sports</option>';
+    }
+  }
+
+  function openCreateModal() {
+    createModal.classList.add("open");
+    document.body.style.overflow = "hidden";
+    populateSportsDropdown();
+  }
+
+  function closeCreateModal() {
+    createModal.classList.remove("open");
+    document.body.style.overflow = "";
+    if (modalMessageCreate) {
+      modalMessageCreate.textContent = '';
+      modalMessageCreate.className = 'modal-message';
+    }
+    if (confirmCreateBtn) {
+      confirmCreateBtn.disabled = false;
+      confirmCreateBtn.textContent = 'Confirm Create';
+    }
+    createForm.reset(); 
+  }
+
+  if (createModal && openCreateModalBtn && closeCreateBtn && cancelCreateBtn) {
+    openCreateModalBtn.addEventListener('click', openCreateModal);
+    closeCreateBtn.addEventListener("click", closeCreateModal);
+    cancelCreateBtn.addEventListener("click", closeCreateModal);
+    createModal.addEventListener("click", (e) => {
+      if (e.target === createModal) closeCreateModal();
     });
   }
 
@@ -166,7 +228,7 @@ document.addEventListener('DOMContentLoaded', () => {
       }
       
       try {
-        const res = await fetch(`/events/delete`, {
+        const res = await fetch(`/api/events/delete`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ eventId: eventId }),
@@ -206,6 +268,82 @@ document.addEventListener('DOMContentLoaded', () => {
         }
       } finally {
         setTimeout(closeDeleteModal, 3000);
+      }
+    });
+  }
+
+  if (createForm) {
+    createForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      if (confirmCreateBtn) {
+        confirmCreateBtn.disabled = true;
+        confirmCreateBtn.textContent = 'Creating...';
+      }
+      if (modalMessageCreate) {
+        modalMessageCreate.textContent = 'Processing...';
+        modalMessageCreate.className = 'modal-message message-loading';
+      }
+      
+      const formData = new FormData(createForm);
+      const eventData = Object.fromEntries(formData.entries());
+
+      const selectedDate = new Date(eventData.date + "T" + eventData.time);
+      const now = new Date();
+      if (selectedDate < now) {
+          if (modalMessageCreate) {
+            modalMessageCreate.textContent = 'You cannot create an event in the past.';
+            modalMessageCreate.className = 'modal-message message-error';
+          }
+          if (confirmCreateBtn) {
+            confirmCreateBtn.disabled = false;
+            confirmCreateBtn.textContent = 'Confirm Create';
+          }
+          return; 
+      }
+
+      try {
+        const res = await fetch(`/api/events/create`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(eventData),
+          credentials: 'include'
+        });
+
+        const messageText = await res.text();
+
+        if (res.ok) {
+          if (modalMessageCreate) {
+            modalMessageCreate.textContent = messageText || 'Successfully created the event!';
+            modalMessageCreate.className = 'modal-message message-success';
+          }
+          if (confirmCreateBtn) {
+            confirmCreateBtn.textContent = 'Event Created';
+          }
+          fetchMyEvents();
+          createForm.reset(); 
+        } else {
+          if (modalMessageCreate) {
+            modalMessageCreate.textContent = messageText || 'Failed to create event.';
+            modalMessageCreate.className = 'modal-message message-error';
+          }
+          if (confirmCreateBtn) {
+            confirmCreateBtn.disabled = false;
+            confirmCreateBtn.textContent = 'Confirm Create';
+          }
+        }
+      } catch (err) {
+        console.error('Create event fetch error:', err);
+        if (modalMessageCreate) {
+          modalMessageCreate.textContent = 'A network error occurred.';
+          modalMessageCreate.className = 'modal-message message-error';
+        }
+        if (confirmCreateBtn) {
+          confirmCreateBtn.disabled = false;
+          confirmCreateBtn.textContent = 'Confirm Create';
+        }
+      } finally {
+        setTimeout(closeCreateModal, 3000);
       }
     });
   }

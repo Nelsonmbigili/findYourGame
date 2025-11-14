@@ -193,3 +193,30 @@ export async function leaveEvent(eventId, userId) {
   }
   return event;
 }
+
+export async function createEvent(eventData) {
+  const sportId = await getSportIdByName(eventData.sport);
+  if (!sportId) {
+    throw new Error('Invalid sport selected. Please refresh and try again.');
+  }
+
+  const fullEventData = {
+    ...eventData,
+    sport: sportId, 
+    participants: [] 
+  };
+
+  const newEvent = new Event(fullEventData);
+  await newEvent.save();
+
+  try {
+    await User.updateOne(
+      { _id: newEvent.owner },
+      { $push: { createdEvents: newEvent._id } }
+    );
+  } catch (err) {
+    console.error("Error updating user's createdEvents:", err);
+  }
+  
+  return newEvent;
+}
