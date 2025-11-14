@@ -724,3 +724,35 @@ textarea {
   cursor: pointer;
   font-size: 1rem;
 }
+
+.modal-message {
+  padding: 10px;
+  margin-bottom: 15px;
+  border-radius: 4px;
+  text-align: center;
+  font-size: 0.9em;
+  display: none; 
+}
+
+.modal-message:not(:empty) {
+  display: block;
+}
+
+.modal-message.message-loading {
+  background-color: #eef;
+  color: #33a;
+  border: 1px solid #cce;
+}
+
+.modal-message.message-success {
+  background-color: #e6ffed;
+  color: #006421;
+  border: 1px solid #a6e3b6;
+}
+
+.modal-message.message-error {
+  background-color: #ffeded;
+  color: #a80000;
+  border: 1px solid #f9c6c6;
+}
+

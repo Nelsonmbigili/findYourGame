@@ -9,6 +9,9 @@ document.addEventListener('DOMContentLoaded', () => {
   const registerModal = document.getElementById("modal-register");
   const closeRegister = document.getElementById("close-register");
   const cancelRegister = document.getElementById("cancel-register");
+  const registerForm = document.getElementById('register-form');
+  const modalMessage = document.getElementById('modal-message');
+  const confirmRegisterBtn = document.getElementById('confirm-register-btn');
 
   function openRegisterModal(eventId, eventTitle) {
     registerModal.classList.add("open");
@@ -24,9 +27,19 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   function closeRegisterModal() {
-    registerModal.classList.remove("open");
-    document.body.style.overflow = "";
-  }
+      registerModal.classList.remove("open");
+      document.body.style.overflow = "";
+
+      if (modalMessage) {
+        modalMessage.textContent = '';
+        modalMessage.className = 'modal-message'; 
+      }
+      if (confirmRegisterBtn) {
+        confirmRegisterBtn.disabled = false;
+        confirmRegisterBtn.textContent = 'Confirm Registration';
+      }
+     
+    }
 
   if (registerModal && closeRegister && cancelRegister) {
     closeRegister.addEventListener("click", closeRegisterModal);
@@ -36,6 +49,77 @@ document.addEventListener('DOMContentLoaded', () => {
       if (e.target === registerModal) closeRegisterModal();
     });
   }
+
+  if (registerForm) {
+    registerForm.addEventListener('submit', async (e) => {
+      e.preventDefault(); 
+      const eventId = document.getElementById("event-id").value;
+
+      if (confirmRegisterBtn) {
+        confirmRegisterBtn.disabled = true;
+        confirmRegisterBtn.textContent = 'Registering...';
+      }
+      if (modalMessage) {
+        modalMessage.textContent = 'Processing your registration...';
+        modalMessage.className = 'modal-message message-loading';
+      }
+      console.log("Event Id: ", eventId);
+      try {
+        const res = await fetch(`/events/join`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json' 
+          },
+          body: JSON.stringify({ eventId: eventId }),
+          credentials: 'include'
+        });
+
+        const messageText = await res.text(); 
+
+        if (res.ok) {
+
+          if (modalMessage) {
+            modalMessage.textContent = messageText || 'Successfully registered!';
+            modalMessage.className = 'modal-message message-success';
+          }
+  
+          if (confirmRegisterBtn) {
+             confirmRegisterBtn.textContent = 'Registered!';
+          }
+
+          performSearch(); 
+        } else {
+
+          if (modalMessage) {
+            modalMessage.textContent = messageText || 'Registration failed. Please try again.';
+            modalMessage.className = 'modal-message message-error';
+          }
+
+          if (confirmRegisterBtn) {
+            confirmRegisterBtn.disabled = false;
+            confirmRegisterBtn.textContent = 'Confirm Registration';
+          }
+        }
+
+      } catch (err) {
+
+        console.error('Registration fetch error:', err);
+        if (modalMessage) {
+          modalMessage.textContent = 'A network error occurred. Please try again.';
+          modalMessage.className = 'modal-message message-error';
+        }
+
+        if (confirmRegisterBtn) {
+          confirmRegisterBtn.disabled = false;
+          confirmRegisterBtn.textContent = 'Confirm Registration';
+        }
+      }
+      finally {
+        setTimeout(closeRegisterModal, 2000);
+      }
+    });
+  }
+
 
 
   function attachJoinModalListeners() {
@@ -48,7 +132,7 @@ document.addEventListener('DOMContentLoaded', () => {
       });
     });
   }
-  
+
   attachJoinModalListeners();
 
   // Table and Pagination elements
