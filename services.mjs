@@ -116,3 +116,80 @@ export async function joinEvent(eventId, participantData) {
   
   return event;
 }
+
+
+export const getMyEvents = async (userId, skip = 0, limit = 10) => {
+  try {
+    const user = await User.findById(userId).select('joinedEvents').lean();
+    const eventIds = user?.joinedEvents || [];
+    
+    const query = {
+      $or: [
+        { owner: userId },
+        { _id: { $in: eventIds } }
+      ]
+    };
+
+    const totalEvents = await Event.countDocuments(query);
+
+    const events = await Event.find(query)
+      .populate('sport', 'name')
+      .populate('participants', '_id') 
+      .sort({ date: 1 }) 
+      .skip(skip)
+      .limit(limit)
+      .lean(); 
+
+    return { events, totalEvents };
+    
+  } catch (err) {
+    console.error("Error in getMyEvents:", err);
+    throw err;
+  }
+};
+
+
+export async function deleteEvent(eventId, userId) {
+  const event = await Event.findOneAndDelete({ 
+    _id: eventId, 
+    owner: userId 
+  });
+
+  if (!event) {
+    throw new Error('Event not found, or you are not the owner.');
+  }
+
+  try {
+    await User.updateMany(
+      { joinedEvents: eventId },
+      { $pull: { joinedEvents: eventId } }
+    );
+  } catch (err) {
+    console.error("Error cleaning up joinedEvents on event delete:", err);
+  }
+  
+  return event;
+}
+
+
+export async function leaveEvent(eventId, userId) {
+  const event = await Event.findOneAndUpdate(
+    { _id: eventId },
+    { $pull: { participants: { _id: userId } } }
+  );
+
+  if (!event) {
+
+    console.warn(`Event not found (or user not in it) during leave: ${eventId}`);
+  }
+
+  try {
+    await User.updateOne(
+      { _id: userId },
+      { $pull: { joinedEvents: eventId } }
+    );
+  } catch (err) {
+    console.error("Error updating user's joinedEvents (leave):", err);
+  }
+  return event;
+}
