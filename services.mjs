@@ -103,7 +103,16 @@ export async function joinEvent(eventId, participantData) {
     
     throw new Error('Could not register for the event. Please try again.');
   }
-  
 
+  // Update user with reference to the Joined event
+  try {
+    await User.updateOne(
+      { _id: participantData._id },
+      { $addToSet: { joinedEvents: eventId } }
+    );
+  } catch (err) {
+    console.error("Error updating user's joinedEvents:", err);
+  }
+  
   return event;
 }
