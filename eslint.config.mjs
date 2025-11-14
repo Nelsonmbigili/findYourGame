@@ -4,13 +4,21 @@ import { defineConfig } from "eslint/config";
 import mochaPlugin from "eslint-plugin-mocha";
 
 export default defineConfig([
+
+  // ========================================================
+  // 1️⃣ BACKEND + DEFAULT CONFIG (Node.js)
+  // ========================================================
   {
     files: ["**/*.{js,mjs,cjs}"],
+    ignores: ["public/**"], // frontend handled separately
+
     plugins: { js },
     extends: ["js/recommended"],
+
     languageOptions: {
       globals: globals.node
     },
+
     rules: {
       semi: ["error", "always"],
       "no-var": ["error"],
@@ -30,5 +38,22 @@ export default defineConfig([
       "no-console": ["off"]
     }
   },
+
+  // ========================================================
+  // 2️⃣ FRONTEND CONFIG (Browser JS in /public)
+  // ========================================================
+  {
+    files: ["public/**/*.js"],
+
+    languageOptions: {
+      globals: globals.browser  
+    },
+
+    rules: {
+      "no-undef": "off",                
+      "no-use-before-define": "off"  
+    }
+  },
+
   mochaPlugin.configs.recommended
 ]);

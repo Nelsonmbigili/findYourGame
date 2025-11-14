@@ -46,7 +46,7 @@ document.addEventListener('DOMContentLoaded', () => {
     cancelRegister.addEventListener("click", closeRegisterModal);
 
     registerModal.addEventListener("click", (e) => {
-      if (e.target === registerModal) closeRegisterModal();
+      if (e.target === registerModal) {closeRegisterModal();}
     });
   }
 
@@ -160,7 +160,7 @@ document.addEventListener('DOMContentLoaded', () => {
     params.append('page', state.currentPage);
     params.append('limit', state.pageSize);
     
-    if (searchInput) params.append('search_query', searchInput);
+    if (searchInput) {params.append('search_query', searchInput);}
     if (filterBy && filterOption) {
       params.append('filter_by', filterBy);
       params.append('filter_option', filterOption);
@@ -169,9 +169,9 @@ document.addEventListener('DOMContentLoaded', () => {
     tableBody.innerHTML = '<tr><td colspan="7">Loading events...</td></tr>';
 
     try {
-      console.log(` Fetching here: /api/events/search?${params.toString()}` )
+      console.log(` Fetching here: /api/events/search?${params.toString()}` );
       const res = await fetch(`/api/events/search?${params.toString()}`);
-      if (!res.ok) throw new Error('Network response was not ok');
+      if (!res.ok) {throw new Error('Network response was not ok');}
       
       const { events, pagination } = await res.json();
     
@@ -244,11 +244,11 @@ document.addEventListener('DOMContentLoaded', () => {
     filterOptionSelect.innerHTML = '<option value="">Choose Option</option>'; 
     filterOptionSelect.disabled = true;
 
-    if (!field) return;
+    if (!field) {return;}
 
     try {
       const res = await fetch(`/api/events/filter-options/${field}`);
-      if (!res.ok) throw new Error('Network response was not ok');
+      if (!res.ok) {throw new Error('Network response was not ok');}
       
       const options = await res.json();
       options.forEach(opt => {
