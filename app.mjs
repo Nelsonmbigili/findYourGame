@@ -28,9 +28,11 @@ import {
   getUserById,
   getEventsCount,
   joinEvent,
-  getMyEvents
+  getMyEvents,
+  leaveEvent,
+  createEvent,
+  deleteEvent
 } from "./services.mjs";
-
 
 const app = express();
 const __filename = fileURLToPath(import.meta.url);
@@ -422,26 +424,100 @@ app.get("/api/users/myevents", async (req, res) => {
   }
 });
 
+app.post('/events/leave', async (req, res) => {
+  try {
+    if (!req.session.user || !req.session.user.id) {
+      return res.status(401).send('You must be signed in to leave an event.');
+    }
+    
+    const { eventId } = req.body;
+    const userId = req.session.user.id;
 
-app.get("/dashboard/myevents", async (req, res) => {
-  const userID = req.session.user.id
-  const user = await getUserById(userID);
-  console.log("User Object: ", user);
-  res.render("dashboard", {
-    title: "Dashboard",
-    user
-  });
+    if (!eventId) {
+      return res.status(400).send('Event ID is required.');
+    }
+
+    await leaveEvent(eventId, userId);
+
+    res.status(200).send('Successfully left the event.');
+
+  } catch (err) {
+    console.error('Error leaving event:', err);
+    res.status(500).send(err.message || 'Server error.');
+  }
 });
 
+app.get("/dashboard/myevents", async (req, res) => {
+  try {
+    const userID = req.session.user.id;
+    const user = await getUserById(userID);
+    
+    const sportsOptions = await getSportsOptions();
 
-app.get("/dashboard/create-event", async (req, res) => {
-  const userID = req.session.user.id
-  const user = await getUserById(userID);
-  console.log("User Object: ", user);
-  res.render("create", {
-    title: "create",
-    user
-  });
+    console.log("User Object: ", user);
+    res.render("myEvents", { 
+      title: "My Events",
+      user,
+      sports: sportsOptions 
+    });
+  } catch (err) {
+    console.error("Error loading /dashboard/myevents:", err);
+    res.status(500).send("Error loading page.");
+  }
+});
+
+app.post('/api/events/create', async (req, res) => {
+  try {
+    if (!req.session.user || !req.session.user.id) {
+      return res.status(401).send('You must be signed in to create an event.');
+    }
+    
+    
+    const ownerId = req.session.user.id;
+    const eventData = {
+      ...req.body,
+      owner: ownerId
+    };
+
+    // Validation
+    if (!eventData.title || !eventData.sport || !eventData.location || !eventData.date || !eventData.time || !eventData.slots) {
+      return res.status(400).send('Missing required event fields.');
+    }
+    console.log("Data being sent to createEvent:", JSON.stringify(eventData, null, 2));
+
+    await createEvent(eventData, ownerId);
+
+    
+
+    res.status(201).send('Successfully created the event.');
+
+  } catch (err) {
+    console.error('Error creating event:', err);
+    res.status(500).send(err.message || 'Server error.');
+  }
+});
+
+app.post('/api/events/delete', async (req, res) => {
+  try {
+    if (!req.session.user || !req.session.user.id) {
+      return res.status(401).send('You must be signed in to delete an event.');
+    }
+    
+    const { eventId } = req.body;
+    const userId = req.session.user.id;
+
+    if (!eventId) {
+      return res.status(400).send('Event ID is required.');
+    }
+
+    await deleteEvent(eventId, userId);
+
+    res.status(200).send('Successfully deleted the event.');
+
+  } catch (err) {
+    console.error('Error deleting event:', err);
+    res.status(500).send(err.message || 'Server error.');
+  }
 });
 
 

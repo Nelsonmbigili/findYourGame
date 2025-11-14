@@ -1,7 +1,8 @@
 <div class="events-page-container">
-  <h1 class="events-page-title">My Events</h1>
-  
-  <p>This page shows all the events you have created or joined.</p>
+  <div class="my-events-header">
+    <h1 class="events-page-title">My Events</h1>
+    <button class="btn btn-primary" id="open-create-modal-btn">Create New Event</button>
+  </div>
 
   <div id="events-content-container">
     <div class="table-responsive">
@@ -46,7 +47,6 @@
 </div>
 
 <dialog id="modal-leave" class="modal">
-
   {{#if user}}
     <div class="modal-content">
       <button class="close-btn" id="close-leave">&times;</button>
@@ -76,11 +76,9 @@
       </div>
     </div>
   {{/if}}
-
 </dialog>
 
 <dialog id="modal-delete" class="modal">
-
   {{#if user}}
     <div class="modal-content">
       <button class="close-btn" id="close-delete">&times;</button>
@@ -109,6 +107,73 @@
         <button type="button" class="btn btn-secondary" id="cancel-delete">Cancel</button>
       </div>
     </div>
+  {{/if}}
+</dialog>
+
+<dialog id="modal-create" class="modal">
+  {{#if user}}
+    <div class="modal-content">
+      <button class="close-btn" id="close-create">&times;</button>
+      <h2 id="event-title-create" class="event-title">Create New Event</h2>
+
+      <form id="create-form">
+        <div id="modal-message-create" class="modal-message"></div>
+        
+        <div class="form-group">
+          <label for="create-title">Event Title</label>
+          <input type="text" id="create-title" name="title" required>
+        </div>
+
+        <div class="form-group">
+          <label for="create-sport">Sport</label>
+          <select id="create-sport" name="sport" required>
+            <option value="">Loading sports...</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="create-location">Location</label>
+          <input type="text" id="create-location" name="location" required>
+        </div>
+
+        <div class="form-group-row">
+          <div class="form-group">
+            <label for="create-date">Date</label>
+            <input type="date" id="create-date" name="date" required>
+          </div>
+          <div class="form-group">
+            <label for="create-time">Time</label>
+            <input type="time" id="create-time" name="time" required>
+          </div>
+        </div>
+
+        <div class="form-group-row">
+            <div class="form-group">
+                <label for="create-slots">Slots (Capacity)</label>
+                <input type="number" id="create-slots" name="slots" min="1" required>
+            </div>
+            <div class="form-group">
+                <label for="create-fee">Fee ($)</label>
+                <input type="number" id="create-fee" name="fee" min="0" value="0" required>
+            </div>
+        </div>
+
+        <div class="form-group">
+          <label for="create-description">Description</label>
+          <textarea id="create-description" name="description" rows="3"></textarea>
+        </div>
+
+        <div class="form-group">
+          <label for="create-requirements">Requirements (e.g., "Bring shin guards")</label>
+          <textarea id="create-requirements" name="requirements" rows="2"></textarea>
+        </div>
+
+        <div class="modal-actions">
+          <button type="submit" class="btn btn-primary" id="confirm-create-btn">Confirm Create</button>
+          <button type="button" class="btn btn-secondary" id="cancel-create">Cancel</button>
+        </div>
+      </form>
+    </div>  
   {{/if}}
 
 </dialog>
