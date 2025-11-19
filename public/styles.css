@@ -2,16 +2,14 @@ body {
   font-family: Arial, sans-serif;
   margin: 0;
   min-height: 100vh;          
-  display: flex;
-  flex-direction: column; 
-  background-color: #f8f9fa;
+  background-color: white;
   color: #333;
 }
 
 .container {
   max-width: 1100px;
   margin: 0 auto;
-  padding: 0 20px;
+  padding: 4px 10px;
 }
 
 header {
@@ -72,6 +70,13 @@ main {
   align-items: center;       
   min-height: calc(100vh - 160px);
   padding: 30px 0;
+}
+
+main.no-flex {
+  display: block !important;
+  justify-content: unset;
+  align-items: unset;
+  min-height: unset;
 }
 
 footer {
@@ -161,7 +166,7 @@ h2 {
   color: #222;
 }
 
-form {
+#auth-form {
   display: flex;
   flex-direction: column;
   row-gap: 10px;
@@ -310,10 +315,10 @@ input {
   flex-wrap: wrap;
   gap: 20px;
   align-items: flex-end;
+  justify-content: space-between;
 }
 
 .search-form, .filter-form {
-  flex: 1;
   display: flex;
   gap: 10px;
   flex-wrap: wrap;
@@ -755,4 +760,36 @@ textarea {
   color: #a80000;
   border: 1px solid #f9c6c6;
 }
+
+/* Event Table Styles */
+
+.col-resizer {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 6px;
+  height: 100%;
+  cursor: col-resize;
+  user-select: none;
+  touch-action: none;
+}
+
+.col-resizer:hover {
+  background: rgba(0, 0, 0, 0.1);
+}
+
+table th, table td {
+  white-space: nowrap;   
+  text-overflow: ellipsis;
+  overflow: hidden;
+}
+
+th:nth-child(1) { width: 180px; } /* Event name */
+th:nth-child(2) { width: 100px; } /* Sport */
+th:nth-child(3) { width: 140px; } /* Location */
+th:nth-child(4) { width: 80px;  } /* Date */
+th:nth-child(5) { width: 80px;  } /* Time */
+th:nth-child(6) { width: 80px;  } /* Availability */
+th:nth-child(7) { width: 150px;  } /* Actions */
+
 

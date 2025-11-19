@@ -17,7 +17,7 @@ import sanitize from 'mongo-sanitize';
 import session from "express-session";
 import passport from 'passport';
 import './passport-config.mjs';
-import { sendPasswordResetEmail } from "./email-config.mjs";
+import { sendPasswordResetEmail } from "./email-config.mjs"
 import { 
   getSearchResults,
   getSportsOptions,
@@ -215,7 +215,8 @@ app.get("/events", async (req, res) => {
   try {
     res.render("events", {
       title: "Events",
-      user: req.session?.user || null
+      user: req.session?.user || null,
+      mainClass: "no-flex"
     });
 
   } catch (error) {
@@ -680,7 +681,8 @@ app.post("/forgotpassword", async (req, res) => {
 
     if (user) {
       const unhashedToken = await generatePasswordResetToken(user);
-      await sendPasswordResetEmail(user.email, unhashedToken);
+     const resu = await sendPasswordResetEmail(user.email, unhashedToken);
+     console.log("Email Result: ", resu);
     }
 
     res.render("forgotpassword", { success: successMessage });

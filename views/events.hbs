@@ -4,7 +4,6 @@
   <div class="search-filter-container">
     <div class="filter_and_search">
       <form class="search-form" id="search-form">
-        <label for="search_query">Search Events:</label>
         <div class="search-box">
           <input type="text" id="search_query" name="search_query" placeholder="Enter event name...">
           <button type="submit" class="search-btn">Search</button>
@@ -26,6 +25,7 @@
         </select>
         <button type="submit" class="apply-btn">Apply Filters</button>
       </form>
+      
     </div>
   </div>
 
@@ -34,13 +34,13 @@
     <table class="events-table">
       <thead>
         <tr>
-          <th>Event</th>
-          <th>Sport</th>
-          <th>Location</th>
-          <th>Date</th>
-          <th>Time</th>
-          <th>Availability</th>
-          <th>Actions</th>
+          <th>Event <div class="col-resizer"></div></th>
+          <th>Sport <div class="col-resizer"></div></th>
+          <th>Location <div class="col-resizer"></div></th>
+          <th>Date <div class="col-resizer"></div></th>
+          <th>Time <div class="col-resizer"></div></th>
+          <th>Availability <div class="col-resizer"></div></th>
+          <th>Actions <div class="col-resizer"></div></th>
         </tr>
       </thead>
       <tbody id="events-table-body">

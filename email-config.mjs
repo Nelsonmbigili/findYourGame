@@ -1,25 +1,22 @@
 import nodemailer from 'nodemailer';
 import './config.mjs'; 
 
-// Create a transporter object using Ethereal/SMTP credentials
 const transporter = nodemailer.createTransport({
-  host: process.env.EMAIL_HOST,
-  port: parseInt(process.env.EMAIL_PORT, 10),
-  secure: parseInt(process.env.EMAIL_PORT, 10) === 465,
+  service: 'gmail',
   auth: {
-    user: process.env.EMAIL_USER,
-    pass: process.env.EMAIL_PASS,
+    user: process.env.EMAIL_USER, 
+    pass: process.env.EMAIL_PASS, 
   },
 });
 
 export const sendPasswordResetEmail = async (toEmail, token) => {
-  const resetUrl = `https://findyourgame.onrender.com/:${process.env.PORT || 3000}/resetpassword/${token}`;
+  const resetUrl = `https://findyourgame.onrender.com/resetpassword/${token}`;
 
- const mailOptions = {
-  from: `"FindYourGame Support" <${process.env.EMAIL_FROM}>`,
-  to: toEmail,
-  subject: 'Reset Your Password — FindYourGame',
-  text: `
+  const mailOptions = {
+    from: `"FindYourGame Support" <${process.env.EMAIL_USER}>`, 
+    to: toEmail,
+    subject: 'Reset Your Password — FindYourGame',
+    text: `
       Hello!
 
       We received a request to reset the password for your FindYourGame account.
@@ -34,8 +31,8 @@ export const sendPasswordResetEmail = async (toEmail, token) => {
       Game on! 🎮
       — FindYourGame Team
       `,
-  html: `
-        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto; padding: 20px;">
+    html: `
+        <div style="font-family: Arial, sans-serif; max-width: 600px; padding: 20px;">
             <div style="text-align: center; margin-bottom: 20px;">
               <img src="https://findyourgame.onrender.com/favicon.png" alt="FindYourGame" width="50" style="border-radius: 8px;"/>
             </div>
@@ -78,18 +75,14 @@ export const sendPasswordResetEmail = async (toEmail, token) => {
             </p>
         </div>
       `
-};
-
+  };
 
   try {
     const info = await transporter.sendMail(mailOptions);
     console.log('Password reset email sent: %s', info.messageId);
-    // Preview URL for Ethereal:
-    if (process.env.EMAIL_HOST === 'smtp.ethereal.email') {
-      console.log('Preview URL: %s', nodemailer.getTestMessageUrl(info));
-    }
   } catch (error) {
     console.error('Error sending password reset email:', error);
+    console.error(error.response); 
     throw new Error('Could not send password reset email.');
   }
 };
