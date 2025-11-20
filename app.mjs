@@ -32,7 +32,8 @@ import {
   createEvent,
   deleteEvent,
   findUserByIdAndUpdate,
-  updateEvent
+  updateEvent,
+  getUserByUserName
 } from "./services.mjs";
 
 const app = express();
@@ -468,6 +469,27 @@ app.get("/dashboard", async (req, res) => {
     title: "Dashboard",
     user
   });
+});
+
+app.get("/profile/:username", async (req, res) => {
+  try {
+    const username = req.params.username;
+    const profileUser = await getUserByUserName(username);
+
+    if (!profileUser) {
+     console.log("User noy Found", profileUser, username);
+     return;
+    }
+
+    res.render("profile", {
+      title: `${profileUser.name.firstName}'s Profile`,
+      user: req.session.user, 
+      profileUser: profileUser
+    });
+
+  } catch (error) {
+    console.error("Error fetching profile:", error);
+  }
 });
 
 
