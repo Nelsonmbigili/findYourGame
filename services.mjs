@@ -62,6 +62,14 @@ export const getUserById = async (id) => {
   return user;
 };
 
+export const getUserByUserName = async (username) => {
+  const user = await User.findOne({ username: username})
+    .select('-password -resetToken -resetTokenExpiry')
+    .lean();
+
+  return user;
+};
+
 export const getEventsCount = async (query = {}) => {
 
   return await Event.countDocuments(query);
