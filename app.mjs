@@ -98,17 +98,26 @@ app.post("/api/users/update", async (req, res) => {
         const user = req.session.user;
         const userId = user._id || user.id; 
 
-        const updates = {};
-        if (image) updates.image = image;
-        if (phone) updates.phone = phone;
-        if (about) updates.about = about;
-        if (sports) {
-            if (Array.isArray(sports)) {
-                updates.sports = sports;
+        const updates = ["image", "phone", "about", "sports"].reduce((acc, field) => {
+            const value = req.body[field];
+
+            if (!value) return acc;
+
+            if (field === "sports") {
+              if (Array.isArray(value)) {
+                acc.sports = value;
+              } else {
+                acc.sports = value
+                  .split(',')
+                  .map(s => s.trim())
+                  .filter(s => s.length > 0);
+              }
             } else {
-                updates.sports = sports.split(',').map(s => s.trim()).filter(s => s.length > 0);
+              acc[field] = value;
             }
-        }
+
+            return acc;
+          }, {});
 
         const updatedUser = await findUserByIdAndUpdate(userId, updates);
         
