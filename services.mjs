@@ -220,3 +220,9 @@ export async function createEvent(eventData) {
   
   return newEvent;
 }
+
+export async function findUserByIdAndUpdate(userId, updateData) {
+    const updatedUser = await User.findByIdAndUpdate(userId, updateData, { new: true });
+    return updatedUser;
+}
+

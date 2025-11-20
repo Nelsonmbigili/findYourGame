@@ -1,4 +1,4 @@
-document.addEventListener('DOMContentLoaded', () => {
+  document.addEventListener('DOMContentLoaded', () => {
   const leaveModal = document.getElementById("modal-leave");
   const closeLeaveBtn = document.getElementById("close-leave");
   const cancelLeaveBtn = document.getElementById("cancel-leave");
@@ -34,6 +34,23 @@ document.addEventListener('DOMContentLoaded', () => {
   const prevPageBtn = document.getElementById("prev-page-btn");
   const nextPageBtn = document.getElementById("next-page-btn");
 
+  const settingsModal = document.getElementById("modal-settings");
+  const openSettingsBtn = document.getElementById("open-settings-btn");
+  const closeSettingsBtn = document.getElementById("close-settings");
+  const cancelSettingsBtn = document.getElementById("cancel-settings");
+  const settingsForm = document.getElementById("settings-form");
+  const settingsMessage = document.getElementById("modal-message-settings");
+  const confirmSettingsBtn = document.getElementById("confirm-settings-btn");
+
+  const imageModal = document.getElementById('modal-image-url');
+  const openImageBtn = document.getElementById('open-image-modal-btn');
+  const closeImageBtn = document.getElementById('close-image-modal');
+  const cancelImageBtn = document.getElementById('cancel-image-modal');
+  const imageForm = document.getElementById('image-url-form');
+  const imageMessage = document.getElementById('modal-message-image');
+  const profileImg = document.querySelector('.profile-picture-img');
+
+
   let state = {
     currentPage: 1,
     pageSize: 10,
@@ -41,6 +58,161 @@ document.addEventListener('DOMContentLoaded', () => {
     totalEvents: 0
   };
 
+  function openImageModal() {
+    imageModal.classList.add("open");
+    if (typeof imageModal.showModal === "function") imageModal.showModal();
+    document.body.style.overflow = "hidden";
+  }
+
+  function closeImageModal() {
+    imageModal.classList.remove("open");
+    if (typeof imageModal.close === "function") imageModal.close();
+    document.body.style.overflow = "";
+    
+    if (imageMessage) {
+        imageMessage.textContent = "";
+        imageMessage.className = "modal-message";
+    }
+    if (imageForm) imageForm.reset();
+  }
+
+  if (imageModal && openImageBtn) {
+    openImageBtn.addEventListener("click", (e) => {
+        e.preventDefault(); // Prevent button from submitting if it's inside a form
+        openImageModal();
+    });
+    if (closeImageBtn) closeImageBtn.addEventListener("click", closeImageModal);
+    if (cancelImageBtn) cancelImageBtn.addEventListener("click", closeImageModal);
+
+    imageModal.addEventListener("click", (e) => {
+      if (e.target === imageModal) closeImageModal();
+    });
+  }
+
+  if (imageForm) {
+    imageForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      
+      const urlInput = document.getElementById('image-url-input');
+      const confirmImageBtn = document.getElementById('confirm-image-btn');
+
+      // UI Feedback
+      if (confirmImageBtn) {
+        confirmImageBtn.textContent = "Saving...";
+        confirmImageBtn.disabled = true;
+      }
+      if (imageMessage) {
+          imageMessage.textContent = "Processing...";
+          imageMessage.className = "modal-message";
+      }
+
+      try {
+        const res = await fetch('/api/users/update', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ image: urlInput.value })
+        });
+
+        if (res.ok) {
+          if (profileImg) {
+            profileImg.src = urlInput.value;
+          } else {
+            window.location.reload();
+          }
+          closeImageModal();
+        } else {
+          if (imageMessage) {
+            imageMessage.textContent = "Failed to update image.";
+            imageMessage.className = "modal-message message-error";
+          }
+        }
+      } catch (err) {
+        console.error(err);
+        if (imageMessage) {
+            imageMessage.textContent = "Error connecting to server.";
+            imageMessage.className = "modal-message message-error";
+        }
+      } finally {
+        if (confirmImageBtn) {
+            confirmImageBtn.textContent = "Save Image";
+            confirmImageBtn.disabled = false;
+        }
+      }
+    });
+  }
+
+  function openSettingsModal() {
+    settingsModal.classList.add("open");
+    document.body.style.overflow = "hidden";
+  }
+
+  function closeSettingsModal() {
+    settingsModal.classList.remove("open");
+    document.body.style.overflow = "";
+
+    settingsMessage.textContent = "";
+    settingsMessage.className = "modal-message";
+
+    confirmSettingsBtn.disabled = false;
+    confirmSettingsBtn.textContent = "Save Settings";
+  }
+
+  if (settingsModal && openSettingsBtn && closeSettingsBtn && cancelSettingsBtn) {
+    openSettingsBtn.addEventListener("click", openSettingsModal);
+    closeSettingsBtn.addEventListener("click", closeSettingsModal);
+    cancelSettingsBtn.addEventListener("click", closeSettingsModal);
+
+    settingsModal.addEventListener("click", (e) => {
+      if (e.target === settingsModal) closeSettingsModal();
+    });
+  }
+
+  if (settingsForm) {
+      settingsForm.addEventListener("submit", async (e) => {
+      e.preventDefault();
+
+      confirmSettingsBtn.disabled = true;
+      confirmSettingsBtn.textContent = "Saving...";
+      settingsMessage.textContent = "Processing...";
+      settingsMessage.className = "modal-message message-loading";
+
+      const formData = new FormData(settingsForm);
+      const data = Object.fromEntries(formData.entries());
+
+      try {
+        const res = await fetch("/api/users/update", {
+          method: "POST",
+      
+          headers: { "Content-Type": "application/json" }, 
+
+          body: JSON.stringify(data), 
+          credentials: "include",
+        });
+
+        const msg = await res.json(); 
+
+        if (res.ok) {
+          settingsMessage.textContent = "Settings updated!";
+          settingsMessage.className = "modal-message message-success";
+          confirmSettingsBtn.textContent = "Saved";
+
+          setTimeout(() => location.reload(), 1000);
+        } else {
+          settingsMessage.textContent = msg.error || "Failed to update settings.";
+          settingsMessage.className = "modal-message message-error";
+          confirmSettingsBtn.disabled = false;
+          confirmSettingsBtn.textContent = "Save Settings";
+        }
+      } catch (err) {
+        console.error(err);
+        settingsMessage.textContent = "Network Error";
+        settingsMessage.className = "modal-message message-error";
+        confirmSettingsBtn.disabled = false;
+        confirmSettingsBtn.textContent = "Save Settings";
+      }
+    });
+  }
+  
   function openLeaveModal(eventId, eventTitle) {
     leaveModal.classList.add("open");
     document.body.style.overflow = "hidden";

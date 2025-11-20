@@ -23,11 +23,18 @@ const userSchema = new mongoose.Schema({
     },
     select: false 
   },
+
+  image: { type: String, default: "" },     
+  phone: { type: String, default: "" },     
+  about: { type: String, default: "" },     
+  sports: [{ type: String }],
+
   resetToken: { type: String }, // Password reset token
   resetTokenExpiry: { type: Date },
   createdEvents: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Event' }], // Arr of Reference to obj 
   joinedEvents: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Event' }], // Arr of Reference to obj 
   createdAt: { type: Date, default: Date.now }
+  
 });
 
 
