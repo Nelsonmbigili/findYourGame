@@ -400,6 +400,8 @@ app.get('/events/:id', async (req, res) => {
     const remainingCount = (event.participants?.length || 0) - maxDisplay;
     const rawDate = new Date(event.date).toISOString().split('T')[0];
 
+    console.log("participants: ", displayedParticipants);
+
     res.render('eventDetails', {
       event: { ...event.toObject ? event.toObject() : event, rawDate }, 
       ownerInitials,
