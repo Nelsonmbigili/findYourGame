@@ -90,37 +90,26 @@
   </section>
 
   <!-- Action Buttons -->
-  <section class="event-actions">
-    {{#if user}}
-      {{#if owner}}
-        <!-- Owner can edit or delete -->
-        <a href="/events/{{event._id}}/edit" class="btn">Edit</a>
-        <form action="/events/{{event._id}}/delete" onsubmit="return confirm('Delete this event?')" style="display:inline;">
-          <button type="submit" class="btn btn-delete">Delete</button>
-        </form>
+    <section class="event-actions">
+      {{#if user}}
+        {{#if owner}}
+          <button class="btn" id="open-edit-btn">Edit Event</button>
+          <button class="btn btn-delete" id="open-delete-btn" style="background-color: #d32f2f;">Delete Event</button>
 
-      {{else if isParticipant}}
-        <!-- User already joined, can leave -->
-        <form action="/events/{{event._id}}/leave" method="post">
-          <button type="submit" class="btn">Leave Event</button>
-        </form>
+        {{else if isParticipant}}
+          <button class="btn" id="open-leave-btn" style="background-color: #f57c00;">Leave Event</button>
 
-      {{else if isFull}}
-        <!-- Event is full -->
-        <button class="btn" disabled>Event Full</button>
+        {{else if isFull}}
+          <button class="btn" disabled>Event Full</button>
+
+        {{else}}
+          <button class="btn join-btn" id="open-register-btn">Register</button>
+        {{/if}}
 
       {{else}}
-        <!-- Available for registration -->
-        <button class="btn join-btn" data-id="{{event._id}}" data-title="{{event.title}}">
-          Register
-        </button>
+        <a href="/signin" class="btn">Sign in to Register</a>
       {{/if}}
-
-    {{else}}
-      <!-- Guest, not signed in -->
-      <a href="/signin" class="btn">Sign in to Register</a>
-    {{/if}}
-  </section>
+    </section>
 </div>
 
 {{!-- Register Dialog  --}}
@@ -166,6 +155,106 @@
   {{/if}}
 
 </dialog>
+
+<dialog id="modal-leave" class="modal">
+  <div class="modal-content">
+    <button class="close-btn" id="close-leave">&times;</button>
+    <h2 class="event-title">Leave Event?</h2>
+    <form id="leave-form">
+      <div id="modal-message-leave" class="modal-message"></div>
+      <p>Are you sure you want to leave <strong>{{event.title}}</strong>?</p>
+      <input type="hidden" name="event_id" value="{{event._id}}">
+      <div class="modal-actions">
+        <button type="submit" class="btn btn-danger" id="confirm-leave-btn" style="background-color: #f57c00;">Confirm Leave</button>
+        <button type="button" class="btn btn-secondary" id="cancel-leave">Cancel</button>
+      </div>
+    </form>
+  </div>
+</dialog>
+
+<dialog id="modal-delete" class="modal">
+  <div class="modal-content">
+    <button class="close-btn" id="close-delete">&times;</button>
+    <h2 class="event-title">Delete Event?</h2>
+    <form id="delete-form">
+      <div id="modal-message-delete" class="modal-message"></div>
+      <p>Are you sure you want to permanently delete <strong>{{event.title}}</strong>? This cannot be undone.</p>
+      <input type="hidden" name="event_id" value="{{event._id}}">
+      <div class="modal-actions">
+        <button type="submit" class="btn btn-danger" id="confirm-delete-btn" style="background-color: #d32f2f;">Confirm Delete</button>
+        <button type="button" class="btn btn-secondary" id="cancel-delete">Cancel</button>
+      </div>
+    </form>
+  </div>
+</dialog>
+
+<dialog id="modal-edit" class="modal">
+  <div class="modal-content">
+    <button class="close-btn" id="close-edit">&times;</button>
+    <h2 class="event-title">Edit Event</h2>
+
+    <form id="edit-form">
+      <div id="modal-message-edit" class="modal-message"></div>
+      <input type="hidden" name="eventId" value="{{event._id}}">
+
+      <div class="form-group">
+        <label for="edit-title">Event Title</label>
+        <input type="text" id="edit-title" name="title" value="{{event.title}}" required>
+      </div>
+
+      <div class="form-group">
+        <label for="edit-sport">Sport</label>
+        <select id="edit-sport" name="sport" data-selected="{{event.sport._id}}" required>
+          <option value="">Loading sports...</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label for="edit-location">Location</label>
+        <input type="text" id="edit-location" name="location" value="{{event.location}}" required>
+      </div>
+
+      <div class="form-group-row">
+        <div class="form-group">
+          <label for="edit-date">Date</label>
+          <input type="date" id="edit-date" name="date" value="{{event.rawDate}}" required>
+        </div>
+        <div class="form-group">
+          <label for="edit-time">Time</label>
+          <input type="time" id="edit-time" name="time" value="{{event.time}}" required>
+        </div>
+      </div>
+
+      <div class="form-group-row">
+          <div class="form-group">
+              <label for="edit-slots">Slots (Capacity)</label>
+              <input type="number" id="edit-slots" name="slots" min="1" value="{{event.slots}}" required>
+          </div>
+          <div class="form-group">
+              <label for="edit-fee">Fee ($)</label>
+              <input type="number" id="edit-fee" name="fee" min="0" value="{{event.fee}}" required>
+          </div>
+      </div>
+
+      <div class="form-group">
+        <label for="edit-description">Description</label>
+        <textarea id="edit-description" name="description" rows="3">{{event.description}}</textarea>
+      </div>
+
+      <div class="form-group">
+        <label for="edit-requirements">Requirements</label>
+        <textarea id="edit-requirements" name="requirements" rows="2">{{event.requirements}}</textarea>
+      </div>
+
+      <div class="modal-actions">
+        <button type="submit" class="btn btn-primary" id="confirm-edit-btn">Save Changes</button>
+        <button type="button" class="btn btn-secondary" id="cancel-edit">Cancel</button>
+      </div>
+    </form>
+  </div>  
+</dialog>
+
+<dialog id="modal-register" class="modal"> ... (Your existing register code) ... </dialog>
 
 
 <script src="/events.js"></script>

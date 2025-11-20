@@ -30,12 +30,14 @@ import {
   getMyEvents,
   leaveEvent,
   createEvent,
-  deleteEvent
+  deleteEvent,
+  findUserByIdAndUpdate
 } from "./services.mjs";
 
 const app = express();
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
+
 
 app.set("view engine", "hbs");
 app.set('trust proxy', 1);
@@ -83,6 +85,57 @@ app.get('/', (req, res) => {
 app.get("/about", (req,res)=>{
 	res.render("about",{});
 });
+
+app.post("/api/users/update", async (req, res) => {
+    try {
+        const { image, phone, about, sports } = req.body;
+        
+        if (!req.session.user) {
+            return res.status(401).json({ error: "Not authenticated" });
+        }
+
+        const user = req.session.user;
+        const userId = user._id || user.id; 
+
+        const updates = {};
+        if (image) updates.image = image;
+        if (phone) updates.phone = phone;
+        if (about) updates.about = about;
+        if (sports) {
+            if (Array.isArray(sports)) {
+                updates.sports = sports;
+            } else {
+                updates.sports = sports.split(',').map(s => s.trim()).filter(s => s.length > 0);
+            }
+        }
+
+        const updatedUser = await findUserByIdAndUpdate(userId, updates);
+        
+        if (!updatedUser) {
+            req.session.destroy(); 
+            return res.status(404).json({ error: "User not found" });
+        }
+
+        const userForSession = updatedUser.toObject();
+        
+        userForSession.id = userForSession._id.toString();
+
+        req.session.user = userForSession;
+
+        req.session.save((err) => {
+            if (err) {
+                console.error("Session save error:", err);
+                return res.status(500).json({ error: "Failed to save session" });
+            }
+            res.json({ success: true, user: userForSession });
+        });
+
+    } catch (err) {
+        console.error("Profile update error:", err);
+        res.status(500).json({ error: "Update failed" });
+    }
+});
+
 
 
 // Ajax API for fetching Events
