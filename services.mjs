@@ -1,7 +1,7 @@
 import {Event, Sport, User} from './db.mjs'; 
 
 const formatEvents = (events) => {
-  if (!Array.isArray(events)) {events = [events];} // handle single event
+  if (!Array.isArray(events)) {events = [events];} 
   
   return events.map(event => {
     const dateObj = new Date(event.date);
@@ -224,5 +224,27 @@ export async function createEvent(eventData) {
 export async function findUserByIdAndUpdate(userId, updateData) {
     const updatedUser = await User.findByIdAndUpdate(userId, updateData, { new: true });
     return updatedUser;
+}
+
+
+export async function updateEvent(eventId, userId, updateData) {
+  const event = await Event.findById(eventId);
+  if (!event) {
+    throw new Error("Event not found.");
+  }
+  if (event.owner.toString() !== userId.toString()) {
+    throw new Error("Unauthorized: You can only edit your own events.");
+  }
+
+  if (updateData.slots && updateData.slots < event.participants.length) {
+    throw new Error(`Cannot set slots to ${updateData.slots} because ${event.participants.length} people have already joined.`);
+  }
+  const updatedEvent = await Event.findByIdAndUpdate(
+    eventId,
+    { $set: updateData },
+    { new: true, runValidators: true } 
+  );
+
+  return updatedEvent;
 }
 
