@@ -61,14 +61,14 @@
       <section class="participants-section">
         <h3>Participants</h3>
         <div class="avatars">
-          {{#each participants}}
-            <div class="avatar" title="{{this.name.firstName}} {{this.name.secondName}}">
+         {{#each participants}}
+            <a href="/profiles/{{this.username}}" class="avatar" title="{{this.name.firstName}} {{this.name.secondName}}">
               {{#if this.image}}
-                <img  src="{{this.image}}" alt="{{this.name.firstName}}">
+                <img src="{{this.image}}" alt="{{this.name.firstName}}">
               {{else}}
                 {{this.name.firstName.[0]}}{{this.name.secondName.[0]}}
               {{/if}}
-            </div>
+            </a>
           {{/each}}
           {{#if hasMoreParticipants}}
             <div class="avatar more">+{{remainingCount}}</div>

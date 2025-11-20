@@ -33,7 +33,9 @@ import {
   deleteEvent,
   findUserByIdAndUpdate,
   updateEvent,
-  getUserByUserName
+  getUserByUserName,
+  searchUsers,
+  countUsers
 } from "./services.mjs";
 
 const app = express();
@@ -271,6 +273,70 @@ app.get("/api/events/search", async (req, res) => {
   }
 });
 
+app.get("/api/users/search", async (req, res) => {
+  try {
+    const search = sanitize(req.query);
+
+    const page = parseInt(search.page) || 1;
+    const limit = parseInt(search.limit) || 10;
+    const skip = (page - 1) * limit;
+
+    const query = {};
+
+    if (search.search_query) {
+      const regex = new RegExp(search.search_query, 'i'); 
+      query.$or = [
+        { 'name.firstName': regex },
+        { 'name.secondName': regex },
+        { 'username': regex }
+      ];
+    }
+
+    if (search.sport) {
+      query.sports = search.sport;
+    }
+
+    console.log("User API Query: ", query);
+    const users = await searchUsers(query, skip, limit);
+    const totalUsers = await countUsers(query);
+    const totalPages = Math.ceil(totalUsers / limit);
+
+    const formattedUsers = users.map(user => {
+      const dateObj = new Date(user.createdAt);
+      const formattedDate = dateObj.toString() === "Invalid Date"
+        ? "Recently"
+        : dateObj.toLocaleDateString('en-US', {
+            month: 'short',
+            day: 'numeric',
+            year: 'numeric'
+          });
+
+      return {
+        name: user.name,
+        username: user.username,
+        image: user.image,
+        sports: user.sports || [],
+        initials: (user.name.firstName[0] + user.name.secondName[0]).toUpperCase(),
+        formattedDate: formattedDate
+      };
+    });
+
+    res.json({
+      users: formattedUsers,
+      pagination: {
+        currentPage: page,
+        totalPages: totalPages,
+        totalUsers: totalUsers,
+        limit: limit
+      }
+    });
+
+  } catch (error) {
+    console.error("User Search Error:", error);
+    res.status(500).json({ error: "Server error while searching users" });
+  }
+});
+
 
 app.get("/events", async (req, res) => {
   try {
@@ -471,7 +537,7 @@ app.get("/dashboard", async (req, res) => {
   });
 });
 
-app.get("/profile/:username", async (req, res) => {
+app.get("/profiles/:username", async (req, res) => {
   try {
     const username = req.params.username;
     const profileUser = await getUserByUserName(username);
@@ -486,9 +552,30 @@ app.get("/profile/:username", async (req, res) => {
       user: req.session.user, 
       profileUser: profileUser
     });
-
   } catch (error) {
     console.error("Error fetching profile:", error);
+  }
+});
+
+app.get("/profiles", async (req, res) => {
+  try {
+    const sportsData = await getSportsOptions();
+
+    const sports = Array.isArray(sportsData) && typeof sportsData[0] === 'object'
+      ? sportsData.map(s => s.value || s.name) 
+      : sportsData;
+
+    res.render("profiles", {
+      title: "Find Players",
+      user: req.session.user, 
+      sports: sports || []    
+    });
+
+  } catch (error) {
+    console.error("Error serving profiles page:", error);
+    res.status(500).render("error", { 
+      message: "Could not load profiles page. Please try again later." 
+    });
   }
 });
 
