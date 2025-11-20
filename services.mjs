@@ -48,7 +48,7 @@ export const getEventById = async (id) => {
   const event = await Event.findOne({ _id: id })
     .populate('sport')           
     .populate('owner', 'name email') 
-    .populate('participants', 'name email') 
+    .populate('participants', 'name email image') 
     .lean();
 
   return formatEvents(event)[0];
