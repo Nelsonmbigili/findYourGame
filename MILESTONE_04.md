@@ -62,15 +62,15 @@ Additionally, SMTP emails were being blocked by Render during deployment, so the
 
 ## First link to github line number(s) for constructor, HOF, etc.
 - [Used map to format Events for display](https://github.com/nyu-csci-ua-0467-001-002-fall-2025/final-project-Nelsonmbigili/blob/f11f2b124315099d60d031a9d87d3781f1e3ebb5/services.mjs#L6)
-- [Used map to format Events for display](https://github.com/nyu-csci-ua-0467-001-002-fall-2025/final-project-Nelsonmbigili/blob/f11f2b124315099d60d031a9d87d3781f1e3ebb5/app.mjs#L385)
 
 ## Second link to github line number(s) for constructor, HOF, etc.
-- [Used reduce to build updates object for an Event](https://github.com/nyu-csci-ua-0467-001-002-fall-2025/final-project-Nelsonmbigili/blob/f11f2b124315099d60d031a9d87d3781f1e3ebb5/services.mjs#L6)
+- [Used map and filter ](https://github.com/nyu-csci-ua-0467-001-002-fall-2025/final-project-Nelsonmbigili/blob/e43a0f38bd9730976c2ba157f91a1fc3f567b29a/app.mjs#L109)
 
 ## Short description for links above
 The First (map) in formating events, it formats event data by mapping over an array of events to produce human-readable formattedDate and formattedTime strings, and calculates slotsRemaining by subtracting the number of participants from the total slots, preparing the data for display on the frontend.
 
-The second (reduce) iterates over the list of fields (image, phone, about, sports) from the request body and constructs an updates object containing only the fields that have values. It also ensures that the sports field is always formatted as an array. This object is then used to update the user in the database.
+
+The second .map() and .filter() are chained in the '/api/users/update' route to process the "Preferred Sports" input string. It splits the string by commas, trims whitespace, and filters out empty strings to create a clean array of tags.
 
 ## Link to github line number(s) for schemas (db.js or models folder)
 
