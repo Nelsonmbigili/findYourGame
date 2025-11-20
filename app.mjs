@@ -17,7 +17,7 @@ import sanitize from 'mongo-sanitize';
 import session from "express-session";
 import passport from 'passport';
 import './passport-config.mjs';
-import { sendPasswordResetEmail } from "./email-config.mjs"
+import { sendPasswordResetEmail } from "./email-config.mjs";
 import { 
   getSearchResults,
   getSportsOptions,
@@ -88,9 +88,7 @@ app.get("/about", (req,res)=>{
 });
 
 app.post("/api/users/update", async (req, res) => {
-    try {
-        const { image, phone, about, sports } = req.body;
-        
+    try {        
         if (!req.session.user) {
             return res.status(401).json({ error: "Not authenticated" });
         }
@@ -101,7 +99,7 @@ app.post("/api/users/update", async (req, res) => {
         const updates = ["image", "phone", "about", "sports"].reduce((acc, field) => {
             const value = req.body[field];
 
-            if (!value) return acc;
+            if (!value) {return acc;}
 
             if (field === "sports") {
               if (Array.isArray(value)) {
@@ -299,21 +297,21 @@ app.post('/api/events/update', async (req, res) => {
     const user = req.session.user;
     const userId = user._id || user.id; 
     const { 
-      eventId, title, sport, location, date, time, slots, fee, description, requirements 
+      eventId, title, location, date, time, slots, fee, description, requirements 
     } = req.body;
 
     if (!eventId) {
       return res.status(400).send('Event ID is required.');
     }
     const updates = {};
-    if (title) updates.title = title;
-    if (location) updates.location = location;
-    if (date) updates.date = date;
-    if (time) updates.time = time;
-    if (slots) updates.slots = parseInt(slots);
-    if (fee !== undefined && fee !== "") updates.fee = parseFloat(fee);
-    if (description !== undefined) updates.description = description;
-    if (requirements !== undefined) updates.requirements = requirements;
+    if (title) {updates.title = title;}
+    if (location) {updates.location = location;}
+    if (date) {updates.date = date;}
+    if (time) {updates.time = time;}
+    if (slots) {updates.slots = parseInt(slots);}
+    if (fee !== undefined && fee !== "") {updates.fee = parseFloat(fee);}
+    if (description !== undefined) {updates.description = description;}
+    if (requirements !== undefined) {updates.requirements = requirements;}
 
     await updateEvent(eventId, userId, updates);
 
@@ -391,7 +389,6 @@ app.get('/events/:id', async (req, res) => {
     }
     const user = req.session.user;
     const userId = (user?._id || user?.id)?.toString();
-    ``
     const ownerId = event.owner?._id?.toString();
     const isOwner = userId && ownerId && userId === ownerId;
   
@@ -631,16 +628,6 @@ app.post('/api/events/delete', async (req, res) => {
 });
 
 
-app.get("/dashboard/settings", async (req, res) => {
-  const userID = req.session.user.id;
-  const user = await getUserById(userID);
-  console.log("User Object: ", user);
-  res.render("dashboard", {
-    title: "Dashboard",
-    user
-  });
-});
-
 app.get("/signin", (req,res)=>{
   res.render("signin",{});
 });
@@ -844,7 +831,7 @@ app.post("/resetpassword/:token", async (req, res) => {
 });
 
 // 404 Middleware
-app.use((req, res, next) => {
+app.use((req, res) => {
   res.status(404).render('404', { 
     title: '404 - Page Not Found',
     user: req.session.user || null 
