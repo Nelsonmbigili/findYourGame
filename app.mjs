@@ -31,7 +31,8 @@ import {
   leaveEvent,
   createEvent,
   deleteEvent,
-  findUserByIdAndUpdate
+  findUserByIdAndUpdate,
+  updateEvent
 } from "./services.mjs";
 
 const app = express();
@@ -216,7 +217,6 @@ app.get("/api/events/search", async (req, res) => {
 
     console.log("API Query: ", query);
 
-    // Get Results from Database
     const searchResults = await getSearchResults(query, sort, skip, limit);
 
     const totalEvents = await getEventsCount(query);
@@ -281,7 +281,49 @@ app.get("/events", async (req, res) => {
   }
 });
 
-// AJAX for populating filter options 
+app.post('/api/events/update', async (req, res) => {
+  try {
+    if (!req.session.user) {
+      return res.status(401).send('You must be signed in to update an event.');
+    }
+
+    const user = req.session.user;
+    const userId = user._id || user.id; 
+    const { 
+      eventId, title, sport, location, date, time, slots, fee, description, requirements 
+    } = req.body;
+
+    if (!eventId) {
+      return res.status(400).send('Event ID is required.');
+    }
+    const updates = {};
+    if (title) updates.title = title;
+    if (location) updates.location = location;
+    if (date) updates.date = date;
+    if (time) updates.time = time;
+    if (slots) updates.slots = parseInt(slots);
+    if (fee !== undefined && fee !== "") updates.fee = parseFloat(fee);
+    if (description !== undefined) updates.description = description;
+    if (requirements !== undefined) updates.requirements = requirements;
+
+    await updateEvent(eventId, userId, updates);
+
+    res.status(200).send('Successfully updated the event.');
+
+  } catch (err) {
+    console.error('Error updating event:', err);
+  
+    if (err.message.includes("Unauthorized")) {
+        return res.status(403).send(err.message);
+    }
+    if (err.message.includes("not found")) {
+        return res.status(404).send(err.message);
+    }
+
+    res.status(500).send(err.message || 'Server error during update.');
+  }
+});
+
 app.get("/api/events/filter-options/:field", async (req, res) => {
   const { field } = req.params;
   try {
@@ -333,43 +375,44 @@ app.get("/api/events/filter-options/:field", async (req, res) => {
 app.get('/events/:id', async (req, res) => {
   try {
     const eventID = req.params.id;
-    console.log('Event ID from params:', eventID);
-
     const event = await getEventById(eventID);
 
     if (!event) {
       return res.status(404).send('Event not found');
     }
-
-    // Organizer initials
+    const user = req.session.user;
+    const userId = (user?._id || user?.id)?.toString();
+    ``
+    const ownerId = event.owner?._id?.toString();
+    const isOwner = userId && ownerId && userId === ownerId;
+  
+    const isParticipant = userId && event.participants.some(p => {
+        const pId = p._id ? p._id.toString() : p.toString();
+        return pId === userId;
+    });
+    
+    const isFull = (event.participants?.length || 0) >= event.slots;
     const ownerInitials = event.owner?.name?.firstName?.[0]?.toUpperCase() || '';
-
+    
     const maxDisplay = 5;
     const displayedParticipants = (event.participants || []).slice(0, maxDisplay);
     const hasMoreParticipants = (event.participants?.length || 0) > maxDisplay;
     const remainingCount = (event.participants?.length || 0) - maxDisplay;
-
-    // User flags
-    const user = req.session.user;
-    const userId = user?._id?.toString();
-    const ownerId = event.owner?._id?.toString();
-
-    const isOwner = userId && ownerId && userId === ownerId;
-    const isParticipant = userId && event.participants.some(p => p._id.toString() === userId);
-    const isFull = (event.participants?.length || 0) >= event.slots;
+    const rawDate = new Date(event.date).toISOString().split('T')[0];
 
     res.render('eventDetails', {
-      event,
+      event: { ...event.toObject ? event.toObject() : event, rawDate }, 
       ownerInitials,
       participants: displayedParticipants,
       hasMoreParticipants,
       remainingCount,
       showParticipants: (event.participants?.length || 0) > 0,
-      user: user,
+      user,
       owner: isOwner,
       isParticipant,
       isFull
     });
+
   } catch (error) {
     console.error('Error loading event:', error);
     res.status(500).send('Server error');
