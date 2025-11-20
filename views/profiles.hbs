@@ -1,0 +1,98 @@
+<div class="events-page-container">
+  <h1 class="events-page-title">Find Players</h1>
+
+  <div class="search-filter-container">
+    <div class="filter_and_search">
+      
+      <!-- Search Form: Searching by Name -->
+      <form class="search-form" id="profile-search-form">
+        <div class="search-box">
+          <input type="text" id="profile_search_query" name="search_query" placeholder="Search by name or username...">
+          <button type="submit" class="search-btn">Search</button>
+        </div>
+      </form>
+
+      <!-- Filter Form: Simplified for Users (Only Sport) -->
+      <form class="filter-form" id="profile-filter-form">
+        <select id="filter-by-sport" name="sport">
+          <option value="">All Sports</option>
+          {{#each sports}}
+            <option value="{{this}}">{{this}}</option>
+          {{/each}}
+        </select>
+        <button type="submit" class="apply-btn">Apply Filter</button>
+      </form>
+      
+    </div>
+  </div>
+
+  <div id="profiles-content-container">
+    <div class="table-responsive">
+    <table class="events-table">
+      <thead>
+        <tr>
+          <th>Avatar <div class="col-resizer"></div></th>
+          <th>Name <div class="col-resizer"></div></th>
+          <th>Username <div class="col-resizer"></div></th>
+          <th>Preferred Sports <div class="col-resizer"></div></th>
+          <th>Member Since <div class="col-resizer"></div></th>
+          <th>Actions <div class="col-resizer"></div></th>
+        </tr>
+      </thead>
+      
+      <!-- This body will be populated by your profiles.js -->
+      <tbody id="profiles-table-body">
+        {{#if users}}
+          {{#each users}}
+            <tr>
+              <td>
+                 {{#if this.image}}
+                    <img src="{{this.image}}" alt="avatar" class="table-avatar" style="width: 30px; height: 30px; border-radius: 50%; object-fit: cover;">
+                 {{else}}
+                    <div class="table-avatar-placeholder" style="width: 30px; height: 30px; border-radius: 50%; background: #eee; display: flex; align-items: center; justify-content: center; font-weight: bold; color: #555;">
+                        {{this.initials}}
+                    </div>
+                 {{/if}}
+              </td>
+              <td>{{this.name.firstName}} {{this.name.secondName}}</td>
+              <td>{{this.username}}</td>
+              <td>
+                {{#each this.sports}}
+                    <span class="sport-tag-small" style="display: inline-block; background: #f0f0f0; padding: 2px 6px; border-radius: 4px; font-size: 0.8rem; margin-right: 4px;">{{this}}</span>
+                {{/each}}
+              </td>
+              <td>{{this.formattedDate}}</td>
+              <td>
+                <a href="/profiles/{{this.username}}" class="btn btn-sm" style="padding: 5px 10px; border: 1px solid #ddd; border-radius: 4px; text-decoration: none; color: inherit; font-size: 0.9rem;">View</a>
+              </td>
+            </tr>
+          {{/each}}
+        {{else}}
+          <tr>
+            <td colspan="6" style="text-align: center; padding: 20px;">No profiles found. Try searching!</td>
+          </tr>
+        {{/if}}
+      </tbody>
+    </table>
+  </div>
+
+    <div class="pagination-controls">
+      <div class="page-size-selector">
+        <label for="page-size-select">Show:</label>
+        <select id="page-size-select">
+          <option value="10">10</option>
+          <option value="25">25</option>
+          <option value="50">50</option>
+        </select>
+        <span id="total-profiles-info"></span>
+      </div>
+      <div class="page-navigator">
+        <button id="prev-page-btn" disabled>&larr; Previous</button>
+        <span id="page-info">Page 1 of 1</span>
+        <button id="next-page-btn" disabled>Next &rarr;</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="profiles.js"></script>

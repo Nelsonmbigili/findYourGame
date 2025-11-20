@@ -48,7 +48,7 @@ export const getEventById = async (id) => {
   const event = await Event.findOne({ _id: id })
     .populate('sport')           
     .populate('owner', 'name email') 
-    .populate('participants', 'name email image') 
+    .populate('participants', 'name email image username') 
     .lean();
 
   return formatEvents(event)[0];
@@ -254,5 +254,13 @@ export async function updateEvent(eventId, userId, updateData) {
   );
 
   return updatedEvent;
+}
+
+export async function searchUsers(query, skip, limit) {
+    return await User.find(query).skip(skip).limit(limit).sort({ createdAt: -1 });
+}
+
+export async function countUsers(query) {
+    return await User.countDocuments(query);
 }
 
