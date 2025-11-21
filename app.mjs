@@ -473,7 +473,7 @@ app.get("/events/participants", async (req, res) => {
                 pageTitle = `Participants: ${event.title}`;
             }
         } catch (err) {
-            console.warn("Invalid Event ID passed to participants route");
+            console.log("Invalid Event ID passed to participants route", err);
         }
     }
 
@@ -926,25 +926,26 @@ app.post("/forgotpassword", async (req, res) => {
   const safeBody = sanitize(req.body);
   const { email } = safeBody;
 
-  const successMessage = "If an account with that email exists, a password reset link has been sent.";
+  const successMessage = "If an account with that email exists, a password reset link has been generated.";
+  let exposeURL = null;
 
-  try {
+try {
     const user = await findUserByEmail(email);
 
     if (user) {
       const unhashedToken = await generatePasswordResetToken(user);
-     const resu = await sendPasswordResetEmail(user.email, unhashedToken);
-     console.log("Email Result: ", resu);
+      
+      exposeURL = await sendPasswordResetEmail(user.email, unhashedToken);
     }
 
-    res.render("forgotpassword", { success: successMessage });
+    // Pass exposeURL to the view
+    res.render("forgotpassword", { success: successMessage, exposeURL });
 
   } catch (error) {
     console.error("Forgot Password Error:", error);
     res.render("forgotpassword", { success: successMessage });
   }
 });
-
 
 app.get("/resetpassword/:token", async (req, res) => {
   try {
