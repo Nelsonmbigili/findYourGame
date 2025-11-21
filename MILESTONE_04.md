@@ -44,6 +44,8 @@ https://findyourgame.onrender.com/dashboard/myevents
 There are several additional forms (eg. edit Events, edit User Profile) implemented as modals in: </br>
 https://findyourgame.onrender.com/dashboard </br>
 https://findyourgame.onrender.com/events
+https://findyourgame.onrender.com/profiles
+https://findyourgame.onrender.com/profiles/:username
 
 
 ## Special Instructions for Form 3
@@ -99,8 +101,7 @@ Session-based authentication allows users to remain logged in securely.
 Only authenticated users can access protected pages such as Dashboard, My Events, and Event Creation.
 
 **1 point – Email Functionality (Password Reset + Deployment Research)**  
-Implemented secure password reset via email.  
-After discovering that SMTP was blocked by Render, researched alternatives and integrated a reliable **email API service** for sending reset links and notifications.
+Due to SMTP port restrictions on the Render deployment platform, I engineered a Simulated Email Workflow (Dev Mode). Instead of sending an external email, the application securely generates the reset link and exposes it temporarily within the UI. This ensures the entire password reset lifecycle (Request →  Generate, hash and store Token → Verify Token → Update Password) can be fully tested and demonstrated without requiring third-party API integration."
 
 ---
 
