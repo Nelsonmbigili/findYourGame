@@ -70,9 +70,14 @@
               {{/if}}
             </a>
           {{/each}}
-          {{#if hasMoreParticipants}}
-            <div class="avatar more">+{{remainingCount}}</div>
+         {{#if hasMoreParticipants}}
+            <a href="/profiles?event={{event._id}}" class="avatar more" style="text-decoration: none;" title="View all participants">+{{remainingCount}}</a>
           {{/if}}
+        </div>
+        <div class="participant-links">
+            <a href="/events/participants?event={{event._id}}">View All Participants</a>
+            <span style="color: #ccc;">|</span>
+            <a href="/profiles">Find Other Players</a>
         </div>
       </section>
     {{/if}}

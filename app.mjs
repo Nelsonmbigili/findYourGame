@@ -282,21 +282,36 @@ app.get("/api/users/search", async (req, res) => {
     const skip = (page - 1) * limit;
 
     const query = {};
+    if (search.event) {
+        const event = await getEventById(search.event);
+        
+        if (event && event.participants && event.participants.length > 0) {
+            query._id = { $in: event.participants };
+        } else {
+            return res.json({
+                users: [],
+                pagination: { currentPage: 1, totalPages: 0, totalUsers: 0, limit: limit }
+            });
+        }
+    }
 
     if (search.search_query) {
       const regex = new RegExp(search.search_query, 'i'); 
-      query.$or = [
+      const nameQuery = [
         { 'name.firstName': regex },
         { 'name.secondName': regex },
         { 'username': regex }
       ];
+
+      if (query.$or) {
+         query.$and = [{ $or: nameQuery }];
+      } else {
+         query.$or = nameQuery;
+      }
     }
 
-    if (search.sport) {
-      query.sports = search.sport;
-    }
+    console.log("User API Query: ", JSON.stringify(query));
 
-    console.log("User API Query: ", query);
     const users = await searchUsers(query, skip, limit);
     const totalUsers = await countUsers(query);
     const totalPages = Math.ceil(totalUsers / limit);
@@ -336,7 +351,6 @@ app.get("/api/users/search", async (req, res) => {
     res.status(500).json({ error: "Server error while searching users" });
   }
 });
-
 
 app.get("/events", async (req, res) => {
   try {
@@ -446,6 +460,37 @@ app.get("/api/events/filter-options/:field", async (req, res) => {
   }
 });
 
+app.get("/events/participants", async (req, res) => {
+  try {
+    const eventId = req.query.event;
+    console.log("Event ID =====>>>>>: ", eventId);
+    let pageTitle = "Event Participants";
+
+    if (eventId) {
+        try {
+            const event = await getEventById(eventId);
+            if (event) {
+                pageTitle = `Participants: ${event.title}`;
+            }
+        } catch (err) {
+            console.warn("Invalid Event ID passed to participants route");
+        }
+    }
+
+    res.render("profiles", {
+      title: pageTitle,
+      user: req.session.user,   
+    });
+
+  } catch (error) {
+    console.error("Error serving participants page:", error);
+    res.status(500).render("error", { 
+      message: "Could not load participants page." 
+    });
+  }
+});
+
+
 app.get('/events/:id', async (req, res) => {
   try {
     const eventID = req.params.id;
@@ -538,8 +583,13 @@ app.get("/dashboard", async (req, res) => {
 });
 
 app.get("/profiles/:username", async (req, res) => {
+   const username = req.params.username;
+   if(!username){
+      res.redirect("/profiles");
+      return;
+    }
+
   try {
-    const username = req.params.username;
     const profileUser = await getUserByUserName(username);
 
     if (!profileUser) {
@@ -560,7 +610,6 @@ app.get("/profiles/:username", async (req, res) => {
 app.get("/profiles", async (req, res) => {
   try {
     const sportsData = await getSportsOptions();
-
     const sports = Array.isArray(sportsData) && typeof sportsData[0] === 'object'
       ? sportsData.map(s => s.value || s.name) 
       : sportsData;
@@ -574,7 +623,7 @@ app.get("/profiles", async (req, res) => {
   } catch (error) {
     console.error("Error serving profiles page:", error);
     res.status(500).render("error", { 
-      message: "Could not load profiles page. Please try again later." 
+      message: "Could not load profiles page." 
     });
   }
 });

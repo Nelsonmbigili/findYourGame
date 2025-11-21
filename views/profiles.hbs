@@ -12,17 +12,6 @@
         </div>
       </form>
 
-      <!-- Filter Form: Simplified for Users (Only Sport) -->
-      <form class="filter-form" id="profile-filter-form">
-        <select id="filter-by-sport" name="sport">
-          <option value="">All Sports</option>
-          {{#each sports}}
-            <option value="{{this}}">{{this}}</option>
-          {{/each}}
-        </select>
-        <button type="submit" class="apply-btn">Apply Filter</button>
-      </form>
-      
     </div>
   </div>
 
@@ -31,21 +20,21 @@
     <table class="events-table">
       <thead>
         <tr>
-          <th>Avatar <div class="col-resizer"></div></th>
           <th>Name <div class="col-resizer"></div></th>
           <th>Username <div class="col-resizer"></div></th>
-          <th>Preferred Sports <div class="col-resizer"></div></th>
+           <th>Avatar <div class="col-resizer"></div></th>
           <th>Member Since <div class="col-resizer"></div></th>
           <th>Actions <div class="col-resizer"></div></th>
         </tr>
       </thead>
-      
-      <!-- This body will be populated by your profiles.js -->
+ 
       <tbody id="profiles-table-body">
         {{#if users}}
           {{#each users}}
             <tr>
-              <td>
+              <td>{{this.name.firstName}} {{this.name.secondName}}</td>
+              <td>{{this.username}}</td>
+               <td>
                  {{#if this.image}}
                     <img src="{{this.image}}" alt="avatar" class="table-avatar" style="width: 30px; height: 30px; border-radius: 50%; object-fit: cover;">
                  {{else}}
@@ -53,13 +42,6 @@
                         {{this.initials}}
                     </div>
                  {{/if}}
-              </td>
-              <td>{{this.name.firstName}} {{this.name.secondName}}</td>
-              <td>{{this.username}}</td>
-              <td>
-                {{#each this.sports}}
-                    <span class="sport-tag-small" style="display: inline-block; background: #f0f0f0; padding: 2px 6px; border-radius: 4px; font-size: 0.8rem; margin-right: 4px;">{{this}}</span>
-                {{/each}}
               </td>
               <td>{{this.formattedDate}}</td>
               <td>
@@ -69,7 +51,7 @@
           {{/each}}
         {{else}}
           <tr>
-            <td colspan="6" style="text-align: center; padding: 20px;">No profiles found. Try searching!</td>
+            <td colspan="5" style="text-align: center; padding: 20px;">No profiles found. Try searching!</td>
           </tr>
         {{/if}}
       </tbody>
@@ -95,4 +77,4 @@
   </div>
 </div>
 
-<script src="profiles.js"></script>
+<script src="/Allprofiles.js"></script>

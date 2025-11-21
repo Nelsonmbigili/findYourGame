@@ -1,9 +1,7 @@
 document.addEventListener('DOMContentLoaded', () => {
 
   const searchForm = document.getElementById("profile-search-form");
-  const filterForm = document.getElementById("profile-filter-form");
   const searchInput = document.getElementById("profile_search_query");
-  const sportSelect = document.getElementById("filter-by-sport");
   
   const tableBody = document.getElementById("profiles-table-body");
   const pageSizeSelect = document.getElementById("page-size-select");
@@ -19,18 +17,20 @@ document.addEventListener('DOMContentLoaded', () => {
     totalUsers: 0
   };
 
-  const performSearch = async () => {
+ const performSearch = async () => {
     const query = searchInput.value;
-    const sport = sportSelect.value;
+    
+    const urlParams = new URLSearchParams(window.location.search);
+    const eventId = urlParams.get('event'); 
 
     const params = new URLSearchParams();
     params.append('page', state.currentPage);
     params.append('limit', state.pageSize);
     
     if (query) { params.append('search_query', query); }
-    if (sport) { params.append('sport', sport); }
+    if (eventId) { params.append('event', eventId); } 
 
-    tableBody.innerHTML = '<tr><td colspan="6" style="text-align: center; padding: 20px;">Loading profiles...</td></tr>';
+    tableBody.innerHTML = '<tr><td colspan="5" style="text-align: center; padding: 20px;">Loading profiles...</td></tr>';
 
     try {
       const res = await fetch(`/api/users/search?${params.toString()}`);
@@ -41,20 +41,18 @@ document.addEventListener('DOMContentLoaded', () => {
       const { users, pagination } = data;
       
       state = { ...state, ...pagination };
-      
       renderTable(users);
       renderPaginationControls();
 
-
     } catch (err) {
       console.error("Failed to fetch profiles:", err);
-      tableBody.innerHTML = '<tr><td colspan="6" style="text-align: center; padding: 20px; color: #d9534f;">Error loading profiles. Please try again.</td></tr>';
+      tableBody.innerHTML = '<tr><td colspan="5" style="text-align: center; padding: 20px; color: #d9534f;">Error loading profiles. Please try again.</td></tr>';
     }
   };
 
   const renderTable = (users) => {
     if (!users || users.length === 0) {
-      tableBody.innerHTML = '<tr><td colspan="6" style="text-align: center; padding: 20px;">No profiles found matching your criteria.</td></tr>';
+      tableBody.innerHTML = '<tr><td colspan="5" style="text-align: center; padding: 20px;">No profiles found matching your criteria.</td></tr>';
       return;
     }
 
@@ -65,12 +63,6 @@ document.addEventListener('DOMContentLoaded', () => {
             const second = user.name.secondName ? user.name.secondName[0] : '';
             initials = (first + second).toUpperCase();
         }
-
-        const sportsHtml = user.sports && user.sports.length 
-            ? user.sports.map(sport => 
-                `<span class="sport-tag-small" style="display: inline-block; background: #f0f0f0; padding: 2px 6px; border-radius: 4px; font-size: 0.8rem; margin-right: 4px;">${sport}</span>`
-              ).join('')
-            : '<span style="color: #999; font-size: 0.8rem;">None</span>';
 
         let avatarHtml = '';
         if (user.image) {
@@ -86,10 +78,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
         return `
         <tr>
-          <td>${avatarHtml}</td>
           <td>${user.name.firstName} ${user.name.secondName}</td>
           <td>${user.username}</td>
-          <td>${sportsHtml}</td>
+          <td>${avatarHtml}</td>
           <td>${memberSince}</td>
           <td>
             <a href="/profiles/${user.username}" class="table-action-btn" title="View Details">
@@ -122,11 +113,6 @@ document.addEventListener('DOMContentLoaded', () => {
     performSearch();
   });
 
-  filterForm.addEventListener("submit", (e) => {
-    e.preventDefault();
-    state.currentPage = 1;
-    performSearch();
-  });
 
   pageSizeSelect.addEventListener("change", (e) => {
     state.pageSize = parseInt(e.target.value);
