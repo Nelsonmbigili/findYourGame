@@ -345,6 +345,38 @@ input {
   background-color: darkgreen;
 }
 
+.participant-links {
+  margin-top: 20px;
+  padding-top: 15px;
+  border-top: 1px solid #f0f0f0;
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 5px;
+  font-size: 0.9rem;
+}
+
+.participant-links a {
+  color: black; 
+  text-decoration: none;
+  font-weight: 500;
+  padding: 6px 12px;
+  border-radius: 6px;
+  background-color: transparent;
+}
+
+.participant-links a:hover {
+  background-color: #eff6ff; 
+  color: green; 
+  text-decoration: none;
+}
+
+.participant-links span {
+  color: #d1d5db; 
+  font-weight: 300;
+  user-select: none;
+}
+
 /* --- Table Styling --- */
 .events-table {
   width: 100%;

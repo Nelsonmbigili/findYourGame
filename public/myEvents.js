@@ -639,25 +639,31 @@
     nextPageBtn.disabled = (state.currentPage || 1) >= (state.totalPages || 1);
   };
 
-  pageSizeSelect.addEventListener("change", (e) => {
-    state.pageSize = parseInt(e.target.value);
-    state.currentPage = 1;
-    fetchMyEvents();
-  });
+ if (pageSizeSelect) {
+    pageSizeSelect.addEventListener("change", (e) => {
+        state.pageSize = parseInt(e.target.value);
+        state.currentPage = 1;
+        fetchMyEvents();
+    });
+  }
 
-  prevPageBtn.addEventListener("click", () => {
-    if (state.currentPage > 1) {
-      state.currentPage--;
-      fetchMyEvents();
-    }
-  });
+  if (prevPageBtn) {
+    prevPageBtn.addEventListener("click", () => {
+        if (state.currentPage > 1) {
+        state.currentPage--;
+        fetchMyEvents();
+        }
+    });
+  }
 
-  nextPageBtn.addEventListener("click", () => {
-    if (state.currentPage < state.totalPages) {
-      state.currentPage++;
-      fetchMyEvents();
-    }
-  });
+  if (nextPageBtn) {
+    nextPageBtn.addEventListener("click", () => {
+        if (state.currentPage < state.totalPages) {
+        state.currentPage++;
+        fetchMyEvents();
+        }
+    });
+  }
 
   // Initial page Load 
   fetchMyEvents();
