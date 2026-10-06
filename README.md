@@ -91,35 +91,35 @@ An Example Sport:
 <details>
 <summary>/events – Page for showing all available sports events</summary>
 
-![all events](documentation/AllEvents-page.png)
+![all events](public/AllEvents-page.png)
 
 </details>
 
 <details>
 <summary>/events/create – Page for creating a new sports event</summary>
 
-![create event](documentation/CreateEvent-page.png)
+![create event](public/CreateEvent-page.png)
 
 </details>
 
 <details>
 <summary>/events/:id – Page for showing a specific event’s details</summary>
 
-![event details](documentation/EventDetails-page.png)
+![event details](public/EventDetails-page.png)
 
 </details>
 
 <details>
 <summary>/profile – Page for showing the user’s profile and account information</summary>
 
-![profile](documentation/Profile-page.png)
+![profile](public/Profile-page.png)
 
 </details>
 
 <details>
 <summary>/map – Page showing sports events on an interactive map</summary>
 
-![map](documentation/EventMap-page.png)
+![map](public/EventMap-page.png)
 
 </details>
 
@@ -130,7 +130,7 @@ Here is a simple Site Map
 <details>
 <summary>View</summary>
 
-![map](documentation/SiteMap.png)
+![map](public/SiteMap.png)
 
 </details>
 
